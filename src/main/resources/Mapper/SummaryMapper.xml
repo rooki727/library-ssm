@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssmtest.dao.SummaryDao">
+
+    <!-- 查询所有Order -->
+    <select id="findAllSummary" resultType="com.ssmtest.entity.Summary">
+        SELECT * FROM summarylist
+    </select>
+
+    <!-- 添加Order -->
+    <insert id="addSummary" parameterType="com.ssmtest.entity.Summary">
+        INSERT INTO summarylist (user_id,totalMoney,totalCount,buildTime)
+        VALUES( #{user_id}, #{totalMoney}, #{totalCount}, #{buildTime})
+    </insert>
+
+</mapper>

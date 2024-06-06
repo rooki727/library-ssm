@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssmtest.dao.OrderDao">
+
+    <!-- 查询所有Order -->
+    <select id="findAllOrder" resultType="com.ssmtest.entity.Order">
+        SELECT * FROM orderlist
+    </select>
+
+
+    <!-- 更新Order order_status信息 -->
+    <update id="updateOrder" parameterType="com.ssmtest.entity.Order">
+        UPDATE orderlist SET order_status = #{order_status}
+        WHERE order_id = #{order_id}
+    </update>
+    <!-- 更新Order updateSummaryStatus信息 -->
+    <update id="updateSummaryStatus" parameterType="com.ssmtest.entity.Order">
+        UPDATE orderlist SET summary_status = #{summary_status}
+        WHERE order_id = #{order_id}
+    </update>
+
+    <!-- 删除Order -->
+    <delete id="deleteOrder" parameterType="com.ssmtest.entity.Order">
+        DELETE FROM orderlist WHERE order_id = #{order_id}
+    </delete>
+
+
+<!--  获取订单日月信息-->
+    <select id="getTodayOrderAdd" resultType="java.lang.Integer">
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY) AND order_status ="已完成"
+    </select>
+    <select id="getMonthSaleCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="已完成"
+    </select> <select id="getMonthMoney" resultType="java.lang.Integer">
+    SELECT SUM(price)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="已完成"
+</select>
+
+</mapper>

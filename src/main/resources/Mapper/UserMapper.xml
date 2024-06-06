@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssmtest.dao.IUserDao">
+
+    <!-- 查询所有admin -->
+    <select id="findAllAdmin" resultType="com.ssmtest.entity.Admin">
+        SELECT * FROM admin
+    </select>
+<!--    根据id查询admin-->
+    <select id="getLoginById" resultType="com.ssmtest.entity.Admin">
+        SELECT * FROM admin WHERE id= #{id}
+    </select>
+    <!-- 添加admin -->
+    <insert id="addAdmin" parameterType="com.ssmtest.entity.Admin">
+        INSERT INTO admin(name,account,password,verify,gender,phone,email,buildTime)
+        VALUES(#{name}, #{account}, #{password}, #{verify}, #{gender}, #{phone}, #{email},#{buildTime})
+    </insert>
+
+    <!-- 删除用户 -->
+    <delete id="deleteAdmin" parameterType="com.ssmtest.entity.Admin">
+        DELETE FROM admin WHERE id = #{id}
+    </delete>
+
+    <!-- 更新loginer信息 -->
+    <update id="updateAdmin" parameterType="com.ssmtest.entity.Admin">
+        UPDATE admin
+        <set>
+            <if test="verify == null and account == null">
+                name = #{name}, phone = #{phone}, email = #{email} ,gender=#{gender}
+            </if>
+            <if test="verify != null and account != null">
+                -- 执行其他语句
+                name = #{name}, phone = #{phone}, email = #{email},verify = #{verify},account = #{account},
+            gender=#{gender},password = #{password}
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+<!--更新头像-->
+    <update id="uploadAvatar" parameterType="com.ssmtest.entity.Admin">
+        UPDATE admin SET awatar = #{awatar} WHERE id = #{id}
+    </update>
+    <!--更新密码-->
+    <update id="updatePassword" parameterType="com.ssmtest.entity.Admin">
+        UPDATE admin SET password = #{password} WHERE id = #{id}
+    </update>
+    <!-- 根据账号和密码查询用户 -->
+    <select id="selectUserByAccountAndPassword" resultType="com.ssmtest.entity.Admin" parameterType="com.ssmtest.entity.Admin">
+        SELECT * FROM admin WHERE account = #{account}
+    </select>
+
+
+    <!-- 查询所有用户 -->
+    <select id="findAllUser" resultType="com.ssmtest.entity.User">
+        SELECT * FROM commonuser
+    </select>
+    <!-- 更新User信息 -->
+    <update id="updateUser" parameterType="com.ssmtest.entity.User">
+        UPDATE commonuser SET name = #{name}, phone = #{phone}, email = #{email},verify = #{verify},
+                              account = #{account},gender=#{gender},password = #{password}
+                          WHERE user_id = #{user_id}
+    </update>
+
+    <!-- 添加User -->
+    <insert id="addUser" parameterType="com.ssmtest.entity.User">
+        INSERT INTO commonuser(name,account,password,verify,gender,phone,email,buildTime)
+        VALUES(#{name}, #{account}, #{password}, #{verify}, #{gender}, #{phone}, #{email},#{buildTime})
+    </insert>
+    <!-- 删除用户 -->
+    <delete id="deleteUser" parameterType="com.ssmtest.entity.User">
+        DELETE FROM commonuser WHERE user_id = #{user_id}
+    </delete>
+
+    <select id="selectUserMonth" resultType="java.lang.Integer">
+        SELECT COUNT(*)  FROM commonuser WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    </select>
+    <select id="selectUserToday" resultType="java.lang.Integer">
+        SELECT COUNT(*)  FROM commonuser WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+    </select>
+    <select id="selectUserBuy" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT user_id)  FROM orderlist WHERE order_status="已完成"
+    </select>
+</mapper>
