@@ -98,4 +98,14 @@ public class UserServiceImpl implements IUserService {
     public int selectUserBuy() {
         return userDao.selectUserBuy();
     }
+
+    @Override
+    public Admin selectByAccount(int account) {
+        return userDao.selectByAccount(account);
+    }
+
+    @Override
+    public User selectByAccountUser(int account) {
+        return userDao.selectByAccountUser(account);
+    }
 }

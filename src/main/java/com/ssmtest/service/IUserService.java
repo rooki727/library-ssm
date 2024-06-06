@@ -37,5 +37,7 @@ List<User> findAllUser();
     int  selectUserToday();
     int selectUserMonth();
     int selectUserBuy();
+    Admin selectByAccount(int account);
+    User selectByAccountUser(int account);
 }
 

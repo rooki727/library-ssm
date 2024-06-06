@@ -35,4 +35,8 @@ public interface IUserDao {
     int  selectUserToday();
     int selectUserMonth();
     int selectUserBuy();
+
+    Admin selectByAccount(int account);
+
+    User selectByAccountUser(int account);
 }

@@ -32,18 +32,14 @@ public class UserController {
     public ResponseEntity<?> login(@RequestBody Admin admin, HttpSession session) {
         // 根据用户名从数据库中查询用户信息
         Admin adminFromDb = userService.selectUserByNameAndPassword(admin);
-        System.out.println(adminFromDb);
         String password = admin.getPassword();
-        System.out.println(password);
         if (adminFromDb != null && adminFromDb.getPassword().equals(password)) {
-            System.out.println(1111);
             // 登录成功，生成token
             String token = generateToken(adminFromDb);
-            System.out.println(token);
             // 将token放入响应头中
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
-            System.out.println(headers);
+            adminFromDb.setToken(token);
             return new ResponseEntity<>(adminFromDb, headers, HttpStatus.OK);
         } else {
             // 登录失败
@@ -78,7 +74,7 @@ public Admin getLoginById(@RequestBody Map<String, Object> requestBody){
   return  admin;
 }
 
-    // http://127.0.0.1:8080/library_ssm/user/findAll
+    // http://127.0.0.1:8080/library_ssm/user/findAllAdmin
     @GetMapping("/findAllAdmin")
     @ResponseBody
     public List<Admin> findAllAdmin(){
@@ -190,6 +186,32 @@ public Admin getLoginById(@RequestBody Map<String, Object> requestBody){
         }
 
         return captcha;
+    }
+
+    @PostMapping("/selectByAccount")
+    @ResponseBody
+    public String selectByAccount(@RequestBody Map<String, Object> requestBody){
+        int account = (int) requestBody.get("account");
+       Admin admin= userService.selectByAccount(account);
+       if(admin!=null){
+           return "account存在";
+       }
+       else {
+           return "account不存在";
+       }
+    }
+
+    @PostMapping("/selectByAccountUser")
+    @ResponseBody
+    public String selectByAccountUser(@RequestBody Map<String, Object> requestBody){
+        int account = (int) requestBody.get("account");
+        User user= userService.selectByAccountUser(account);
+        if(user!=null){
+            return "account存在";
+        }
+        else {
+            return "account不存在";
+        }
     }
 }
 

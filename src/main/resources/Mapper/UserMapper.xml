@@ -82,4 +82,12 @@
     <select id="selectUserBuy" resultType="java.lang.Integer">
         SELECT COUNT(DISTINCT user_id)  FROM orderlist WHERE order_status="已完成"
     </select>
+
+    <select id="selectByAccount" resultType="com.ssmtest.entity.Admin" parameterType="com.ssmtest.entity.Admin">
+        SELECT * FROM admin WHERE account = #{account}
+    </select>
+
+    <select id="selectByAccountUser" resultType="com.ssmtest.entity.User" parameterType="com.ssmtest.entity.User">
+        SELECT * FROM commonuser WHERE account = #{account}
+    </select>
 </mapper>

@@ -134,6 +134,7 @@
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
     </dependency>
+<!--    @Data的依赖,自带生成setter getter-->
     <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -142,7 +143,7 @@
       <scope>provided</scope>
     </dependency>
 
-
+<!--前后端分离，json格式传输依赖-->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>

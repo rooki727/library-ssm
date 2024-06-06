@@ -17,6 +17,7 @@ public class Admin implements Serializable {
     private String phone;
     private String email;
     private String verify;
+    private String token;
     private Date buildTime;
 
 }
