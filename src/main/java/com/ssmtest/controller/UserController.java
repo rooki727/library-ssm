@@ -67,30 +67,43 @@ public class UserController {
 
 @PostMapping("/getLoginById")
 @ResponseBody
-public Admin getLoginById(@RequestBody Map<String, Object> requestBody){
+public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBody){
         System.out.println("requestBody");
     int id = (int) requestBody.get("id");
   Admin admin=userService.getLoginById(id);
-  return  admin;
+    String token = generateToken(admin);
+    // 将token放入响应头中
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Authorization", "Bearer " + token);
+    admin.setToken(token);
+    return new ResponseEntity<>(admin, headers, HttpStatus.OK);
 }
 
-    // http://127.0.0.1:8080/library_ssm/user/findAllAdmin
     @GetMapping("/findAllAdmin")
     @ResponseBody
     public List<Admin> findAllAdmin(){
         System.out.println("表现层--查询所有用户");
-        //调用service的方法
-        List<Admin> adminList = userService.findAllAdmin();
-        return adminList;
+        try {
+            //调用service的方法
+            List<Admin> adminList = userService.findAllAdmin();
+            return adminList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     //增
     @PostMapping("/addAdmin")
     @ResponseBody
     public String addAdmin(@RequestBody Admin admin) {
+        try {
+            userService.addAdmin(admin);
+            return "成功添加";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        userService.addAdmin(admin);
-        return "成功添加";
     }
 
     //删
@@ -99,29 +112,46 @@ public Admin getLoginById(@RequestBody Map<String, Object> requestBody){
     public String deleteAdmin(@RequestBody Map<String, Object> requestBody) {
         // 从请求体中获取 userId
         int id = (int) requestBody.get("id");
-
-        userService.deleteAdmin(id);
-        return "成功删除";
+        try {
+            userService.deleteAdmin(id);
+            System.out.println("成功删除已经执行");
+            return "成功删除";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @PostMapping("/updateAdmin")
     @ResponseBody
     public String updateAdmin(@RequestBody Admin admin) {
+        try {
+            userService.updateAdmin(admin);
+            return "成功更新";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        userService.updateAdmin(admin);
-        return "成功更新";
     }
     @PostMapping("/uploadAvatar")
     @ResponseBody
     public String uploadAvatar(@RequestBody Admin admin) {
-        userService.uploadAvatar(admin);
-        return "成功更新";
+        try {
+            userService.uploadAvatar(admin);
+            return "成功更新";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
     @PostMapping("/updatePassword")
     @ResponseBody
     public String updatePassword(@RequestBody Admin admin) {
-        userService.updatePassword(admin);
-        return "成功更新";
+        try {
+            userService.updatePassword(admin);
+            return "成功更新";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 //   普通用户的api
@@ -129,17 +159,27 @@ public Admin getLoginById(@RequestBody Map<String, Object> requestBody){
     @ResponseBody
     public List<User> findAllUser(){
         System.out.println("表现层--查询所有用户");
-        //调用service的方法
-        List<User> userList = userService.findAllUser();
-        return userList;
+        try {
+            //调用service的方法
+            List<User> userList = userService.findAllUser();
+            return userList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     //增
     @PostMapping("/addUser")
     @ResponseBody
     public String adduserList(@RequestBody User user) {
-        userService.addUser(user);
-        return "成功添加";
+        try {
+            userService.addUser(user);
+            return "成功添加";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     //删
@@ -148,27 +188,40 @@ public Admin getLoginById(@RequestBody Map<String, Object> requestBody){
     public String deleteUser(@RequestBody Map<String, Object> requestBody) {
         // 从请求体中获取 userId
         int id = (int) requestBody.get("user_id");
-        userService.deleteUser(id);
-        return "成功删除";
+        try {
+            userService.deleteUser(id);
+            return "成功删除";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @PostMapping("/updateUser")
     @ResponseBody
     public String updateUser(@RequestBody User user) {
+        try {
+            userService.updateUser(user);
+            return "成功更新";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        userService.updateUser(user);
-        return "成功更新";
     }
 
 
     @GetMapping("/getUserState")
     @ResponseBody
     public UserState getUserState(){
+        try {
+            int todayAdd=userService.selectUserToday();
+            int monthAdd=userService.selectUserMonth();
+            int userBuy=userService.selectUserBuy();
+            return new UserState(todayAdd,monthAdd,userBuy);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
-        int todayAdd=userService.selectUserToday();
-        int monthAdd=userService.selectUserMonth();
-        int userBuy=userService.selectUserBuy();
-        return new UserState(todayAdd,monthAdd,userBuy);
     }
 @GetMapping("/generateCaptcha")
 @ResponseBody

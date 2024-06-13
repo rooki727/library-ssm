@@ -19,15 +19,25 @@ public class SummaryController {
     @ResponseBody
     public List<Summary> findAllSummary(){
         System.out.println("表现层--查询所有订单");
-        //调用service的方法
-        List<Summary> summaryList = summaryService.findAllSummary();
-        return summaryList;
+        try {
+            //调用service的方法
+            List<Summary> summaryList = summaryService.findAllSummary();
+            return summaryList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @PostMapping("/addSummary")
     @ResponseBody
     public String addSummary(@RequestBody Summary summary){
-        summaryService.addSummary(summary);
-        return  "成功汇总订单";
+        try {
+            summaryService.addSummary(summary);
+            return  "成功汇总订单";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
