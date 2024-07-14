@@ -21,7 +21,7 @@ public interface IUserDao {
     Admin selectUserByAccountAndPassword(Admin admin);
 
     void updatePassword(Admin admin);
-
+    void updateAdminToken(Admin admin);
 
 //    普通用户部分
     List<User> findAllUser();
@@ -31,6 +31,12 @@ public interface IUserDao {
     void deleteUser(int id);
 
     void updateUser(User user);
+    User selectUserCommonByNameAndPassword(User user);
+    void updateCommonToken(User user);
+
+    User getLoginCommonById(int id);
+
+
 //    查询用户的日期增长情况
     int  selectUserToday();
     int selectUserMonth();
@@ -39,4 +45,5 @@ public interface IUserDao {
     Admin selectByAccount(int account);
 
     User selectByAccountUser(int account);
+
 }

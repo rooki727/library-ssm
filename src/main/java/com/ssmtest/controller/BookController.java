@@ -1,8 +1,6 @@
 package com.ssmtest.controller;
 
-import com.ssmtest.entity.Book;
-import com.ssmtest.entity.BookSum;
-import com.ssmtest.entity.Category;
+import com.ssmtest.entity.*;
 import com.ssmtest.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,12 +25,51 @@ public class BookController {
         try {
 //调用service的方法
             List<Book> bookList = bookService.findAllBook();
+            // 创建一个 List 存储 JSON 对象
+
+            for(Book book: bookList){
+//                // 去掉首尾的大括号，得到两个字典的字符串
+                if(book.getPicture()!=null&&!book.getPicture().isEmpty()){
+                    String[] dictStrs = book.getPicture().split(",");
+                    List<Picture> pictureList = new ArrayList<>();
+                    for (int i=0 ;i<dictStrs.length;i++){
+                        Picture picture= new Picture(dictStrs[i]);
+                        pictureList.add(picture);
+                    }
+                    book.setPictureList(pictureList);
+                    pictureList=null;
+                }
+            }
+
             return bookList;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
     }
+    @GetMapping("/guessLike")
+    @ResponseBody
+    public ApiResponse<GuessLikeResponse>  getHomeGoodsGuessLike(
+            @RequestParam("page") int page,
+            @RequestParam("pageSize") int pageSize) {
+        ApiResponse<GuessLikeResponse> response = new ApiResponse<>();
+        try {
+            response.setCode("1");
+            response.setMsg("操作成功");
+            List<Book> bookList=bookService.getGuessLikeBooks(page, pageSize);
+            int totalPages = bookService.getTotalPages(pageSize);
+            // 构建响应对象
+            GuessLikeResponse guessLikeResponse = new GuessLikeResponse();
+            guessLikeResponse.setBookList(bookList);
+            guessLikeResponse.setTotalPages(totalPages);
+            response.setResult(guessLikeResponse);
+            return response;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
     @GetMapping("/findCategory")
     @ResponseBody
@@ -132,6 +169,5 @@ public class BookController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 }

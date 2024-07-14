@@ -22,6 +22,12 @@
     <delete id="deleteAdmin" parameterType="com.ssmtest.entity.Admin">
         DELETE FROM admin WHERE id = #{id}
     </delete>
+<!--updatetoken-->
+    <update id="updateAdminToken" parameterType="com.ssmtest.entity.Admin">
+        UPDATE admin SET
+            token = #{token}
+        WHERE id = #{id}
+    </update>
 
     <!-- 更新loginer信息 -->
     <update id="updateAdmin" parameterType="com.ssmtest.entity.Admin">
@@ -58,8 +64,19 @@
     </select>
     <!-- 更新User信息 -->
     <update id="updateUser" parameterType="com.ssmtest.entity.User">
-        UPDATE commonuser SET name = #{name}, phone = #{phone}, email = #{email},verify = #{verify},
-                              account = #{account},gender=#{gender},password = #{password}
+        UPDATE commonuser
+        <set>
+            <if test="birthday!=null and address!=null">
+                name = #{name}, phone = #{phone}, email = #{email},
+                gender=#{gender},birthday = #{birthday},address = #{address}
+            </if>
+            <if test="birthday==null and address==null">
+                -- 执行其他语句
+                name = #{name}, phone = #{phone}, email = #{email},verify = #{verify},
+                account = #{account},gender=#{gender},password = #{password}
+            </if>
+        </set>
+
                           WHERE user_id = #{user_id}
     </update>
 
@@ -72,7 +89,17 @@
     <delete id="deleteUser" parameterType="com.ssmtest.entity.User">
         DELETE FROM commonuser WHERE user_id = #{user_id}
     </delete>
-
+    <!-- 根据账号和密码查询用户 -->
+    <select id="selectUserCommonByNameAndPassword" resultType="com.ssmtest.entity.User" parameterType="com.ssmtest.entity.User">
+        SELECT * FROM commonuser WHERE account = #{account}
+    </select>
+    <!--updatetoken-->
+    <update id="updateCommonToken" parameterType="com.ssmtest.entity.User">
+        UPDATE commonuser SET
+            token = #{token}
+        WHERE user_id = #{user_id}
+    </update>
+<!--    用户日月情况-->
     <select id="selectUserMonth" resultType="java.lang.Integer">
         SELECT COUNT(*)  FROM commonuser WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     </select>
@@ -89,5 +116,9 @@
 
     <select id="selectByAccountUser" resultType="com.ssmtest.entity.User" parameterType="com.ssmtest.entity.User">
         SELECT * FROM commonuser WHERE account = #{account}
+    </select>
+    <!--    根据id查询user-->
+    <select id="getLoginCommonById" resultType="com.ssmtest.entity.User">
+        SELECT * FROM commonuser WHERE user_id= #{user_id}
     </select>
 </mapper>

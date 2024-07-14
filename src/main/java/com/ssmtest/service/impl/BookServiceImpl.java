@@ -59,4 +59,16 @@ public class BookServiceImpl implements BookService {
     public Category getMonthSaleList(String category) {
         return bookDao.getMonthSaleList(category);
     }
+    @Override
+    public List<Book> getGuessLikeBooks(int page, int pageSize) {
+        // 在这里可以调用DAO层方法，访问数据库
+        int offset = (page - 1) * pageSize;
+        return bookDao.getBooksGuessLike(offset, pageSize);
+    }
+
+    @Override
+    public int getTotalPages(int pageSize) {
+        int totalCount = bookDao.getTotalCount();
+        return (int) Math.ceil((double) totalCount / pageSize);
+    }
 }

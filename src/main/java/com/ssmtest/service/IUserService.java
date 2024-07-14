@@ -24,8 +24,12 @@ public interface IUserService {
 
     void updatePassword(Admin admin);
 
-//    普通用户部分
-List<User> findAllUser();
+    void updateAdminToken(Admin admin);
+
+    boolean isAdminToken(String reqToken, String sqlToken);
+    Admin selectByAccount(int account);
+    //    普通用户部分
+    List<User> findAllUser();
 
     void addUser(User user);
 
@@ -33,11 +37,16 @@ List<User> findAllUser();
 
     void updateUser(User user);
 
+    User selectByAccountUser(int account);
+
+    User selectUserCommonByNameAndPassword(User user);
     //    查询用户的日期增长情况
     int  selectUserToday();
     int selectUserMonth();
     int selectUserBuy();
-    Admin selectByAccount(int account);
-    User selectByAccountUser(int account);
+    void updateCommonToken(User user);
+    User getLoginCommonById(int id);
+    boolean isCommonToken(String reqToken, String sqlToken);
+
 }
 

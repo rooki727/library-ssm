@@ -63,6 +63,21 @@ public class UserServiceImpl implements IUserService {
         System.out.println("user业务层实现类--updatePassword");
         userDao.updatePassword(admin);
     }
+
+    @Override
+    public void updateAdminToken(Admin admin) {
+       userDao.updateAdminToken(admin);
+    }
+
+    @Override
+    public boolean isAdminToken(String reqToken, String sqlToken) {
+        if(reqToken.equals(sqlToken)){
+            return true;
+        }
+        return false;
+    }
+
+
     //普通用户部分
     @Override
     public List<User> findAllUser() {
@@ -85,6 +100,30 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public User selectUserCommonByNameAndPassword(User user) {
+        return userDao.selectUserCommonByNameAndPassword(user);
+    }
+
+    @Override
+    public void updateCommonToken(User user) {
+        userDao.updateCommonToken(user);
+    }
+
+    @Override
+    public User getLoginCommonById(int id) {
+        return userDao.getLoginCommonById(id);
+    }
+
+    @Override
+    public boolean isCommonToken(String reqToken, String sqlToken) {
+        if(reqToken.equals(sqlToken)){
+            return true;
+        }
+        return false;
+    }
+
+    //    日月情况
+    @Override
     public int selectUserToday() {
         return userDao.selectUserToday();
     }
@@ -99,6 +138,7 @@ public class UserServiceImpl implements IUserService {
         return userDao.selectUserBuy();
     }
 
+
     @Override
     public Admin selectByAccount(int account) {
         return userDao.selectByAccount(account);
@@ -108,4 +148,5 @@ public class UserServiceImpl implements IUserService {
     public User selectByAccountUser(int account) {
         return userDao.selectByAccountUser(account);
     }
+
 }

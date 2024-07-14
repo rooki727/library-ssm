@@ -44,6 +44,11 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"></property>
     </bean>
+    <!-- 配置 ObjectMapper Bean -->
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+        <!-- 你可以在这里设置 ObjectMapper 的各种属性 -->
+    </bean>
+
     <!-- 配置事务的通知 -->
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
         <tx:attributes>

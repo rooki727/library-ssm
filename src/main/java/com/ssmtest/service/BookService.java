@@ -16,4 +16,6 @@ public interface BookService {
     int selectBookMonthOut();
 
     Category getMonthSaleList(String category);
+    List<Book> getGuessLikeBooks(int page, int pageSize);
+    int getTotalPages(int pageSize);
 }

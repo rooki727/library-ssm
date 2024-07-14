@@ -20,14 +20,15 @@
     <!-- 更新book信息 -->
     <update id="updateBook" parameterType="com.ssmtest.entity.Book">
         UPDATE booklist SET book_name = #{book_name}, author = #{author}, category = #{category},
-                            price = #{price},status = #{status}
+                            price = #{price},status = #{status},
+                            picture = #{picture},main_picture = #{main_picture},introduce = #{introduce}
         WHERE book_id = #{book_id}
     </update>
 
     <!-- 添加book -->
     <insert id="addBook" parameterType="com.ssmtest.entity.Book">
-        INSERT INTO booklist (book_name,author,category,price,status,buildTime)
-        VALUES(#{book_name}, #{author}, #{category}, #{price}, #{status}, #{buildTime})
+        INSERT INTO booklist (book_name,author,category,price,status,buildTime,picture,main_picture,introduce)
+        VALUES(#{book_name}, #{author}, #{category}, #{price}, #{status}, #{buildTime},#{picture},#{main_picture},#{introduce})
     </insert>
     <!-- 删除book -->
     <delete id="deleteBook" parameterType="com.ssmtest.entity.Book">
@@ -52,5 +53,13 @@
         SELECT COUNT(*) as "value", #{category} as "category" FROM booklist WHERE category = #{category}
                                                                               AND status ="已出库"
                                                                               AND buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    </select>
+
+    <select id="getBooksGuessLike" resultType="com.ssmtest.entity.Book">
+        SELECT * FROM booklist
+                          LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+    <select id="getTotalCount" resultType="int">
+        SELECT COUNT(*) FROM booklist
     </select>
 </mapper>

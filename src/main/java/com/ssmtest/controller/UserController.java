@@ -1,9 +1,6 @@
 package com.ssmtest.controller;
 
-import com.ssmtest.entity.Admin;
-import com.ssmtest.entity.CaptchaChar;
-import com.ssmtest.entity.User;
-import com.ssmtest.entity.UserState;
+import com.ssmtest.entity.*;
 import com.ssmtest.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -40,6 +39,7 @@ public class UserController {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             adminFromDb.setToken(token);
+            userService.updateAdminToken(adminFromDb);
             return new ResponseEntity<>(adminFromDb, headers, HttpStatus.OK);
         } else {
             // 登录失败
@@ -51,7 +51,21 @@ public class UserController {
 
     public static String generateToken(Admin admin) {
         String name= admin.getName();
-        String timestamp = String.valueOf(System.currentTimeMillis());
+        String timestamp = java.lang.String.valueOf(System.currentTimeMillis());
+        String data = name + timestamp;
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(data.getBytes());
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public static String generateTokenUser(User user) {
+        String name= user.getName();
+        String timestamp = java.lang.String.valueOf(System.currentTimeMillis());
         String data = name + timestamp;
 
         try {
@@ -64,29 +78,54 @@ public class UserController {
         }
     }
 
-
 @PostMapping("/getLoginById")
 @ResponseBody
-public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBody){
-        System.out.println("requestBody");
+public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBody, HttpServletRequest request){
+//        获取id
     int id = (int) requestBody.get("id");
-  Admin admin=userService.getLoginById(id);
-    String token = generateToken(admin);
-    // 将token放入响应头中
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Bearer " + token);
-    admin.setToken(token);
-    return new ResponseEntity<>(admin, headers, HttpStatus.OK);
+//处理token
+    // 获取请求头中的Token
+    String tokenAuthorization = request.getHeader("Authorization");
+    // 判断是否是Bearer Token格式
+    if (tokenAuthorization.startsWith("Bearer ")) {
+        // 获取实际的Token值
+        String token = tokenAuthorization.substring(7);
+        Admin oldAdmin=userService.getLoginById(id);// 7是 "Bearer " 的长度
+        System.out.println(token);
+        System.out.println(oldAdmin.getToken());
+        System.out.println(id);
+        boolean isToken=  userService.isAdminToken(token,oldAdmin.getToken());
+        System.out.println(isToken);
+
+      if(isToken){
+          System.out.println("token校验成功！getLoginById");
+          //    处理业务
+          Admin newAdmin=userService.getLoginById(id);
+          String newToken = generateToken(newAdmin);
+          // 将token放入响应头中
+          HttpHeaders headers = new HttpHeaders();
+          headers.add("Authorization", "Bearer " + newToken);
+          newAdmin.setToken(newToken);
+          userService.updateAdminToken(newAdmin);
+          return new ResponseEntity<>(newAdmin, headers, HttpStatus.OK);
+      }
+    }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+
 }
 
     @GetMapping("/findAllAdmin")
     @ResponseBody
-    public List<Admin> findAllAdmin(){
+    public ApiResponse<List<Admin>> findAllAdmin(HttpServletRequest request){
+        ApiResponse<List<Admin>> response = new ApiResponse<>();
         System.out.println("表现层--查询所有用户");
         try {
             //调用service的方法
             List<Admin> adminList = userService.findAllAdmin();
-            return adminList;
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(adminList);
+            return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -96,10 +135,14 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
     //增
     @PostMapping("/addAdmin")
     @ResponseBody
-    public String addAdmin(@RequestBody Admin admin) {
+    public ApiResponse<Boolean> addAdmin(@RequestBody Admin admin) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
         try {
             userService.addAdmin(admin);
-            return "成功添加";
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(true);
+            return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -109,60 +152,141 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
     //删
     @PostMapping("/deleteAdmin")
     @ResponseBody
-    public String deleteAdmin(@RequestBody Map<String, Object> requestBody) {
+    public ApiResponse<Boolean> deleteAdmin(@RequestBody Map<String, Object> requestBody) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
         // 从请求体中获取 userId
         int id = (int) requestBody.get("id");
         try {
             userService.deleteAdmin(id);
-            System.out.println("成功删除已经执行");
-            return "成功删除";
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(true);
+            return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+//    重置token
+@PostMapping("/resetAdminToken")
+@ResponseBody
+public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
+    ApiResponse<String> response = new ApiResponse<>();
+    try {
+        userService.updateAdminToken(admin);
+        response.setCode("1");
+        response.setMsg("操作成功");
+        response.setResult("重置token成功！");
+        return response;
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+}
 
     @PostMapping("/updateAdmin")
     @ResponseBody
-    public String updateAdmin(@RequestBody Admin admin) {
-        try {
-            userService.updateAdmin(admin);
-            return "成功更新";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public ApiResponse<Boolean> updateAdmin(@RequestBody Admin admin ,HttpServletRequest request ) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        // 获取请求头中的Token
+        String tokenAuthorization = request.getHeader("Authorization");
+        // 判断是否是Bearer Token格式
+        if (tokenAuthorization.startsWith("Bearer ")) {
+            // 获取实际的Token值
+            String token = tokenAuthorization.substring(7);
+            Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
+            boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
+            if (isToken) {
+                System.out.println("token校验成功！updateAdmin");
+                //    处理业务
+                try {
+                    userService.updateAdmin(admin);
+                    response.setCode("1");
+                    response.setMsg("操作成功");
+                    response.setResult(true);
+                    return response;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
-
+        return response;
     }
     @PostMapping("/uploadAvatar")
     @ResponseBody
-    public String uploadAvatar(@RequestBody Admin admin) {
-        try {
-            userService.uploadAvatar(admin);
-            return "成功更新";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public ApiResponse<Boolean> uploadAvatar(@RequestBody Admin admin,HttpServletRequest request) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        // 获取请求头中的Token
+        String tokenAuthorization = request.getHeader("Authorization");
+        // 判断是否是Bearer Token格式
+        if (tokenAuthorization.startsWith("Bearer ")) {
+            // 获取实际的Token值
+            String token = tokenAuthorization.substring(7);
+            Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
+            boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
+            if (isToken) {
+                System.out.println("token校验成功！uploadAvatar");
+                //    处理业务
+                try {
+                    userService.uploadAvatar(admin);
+                    response.setCode("1");
+                    response.setMsg("操作成功");
+                    response.setResult(true);
+                    return response;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+
+        return response;
 
     }
     @PostMapping("/updatePassword")
     @ResponseBody
-    public String updatePassword(@RequestBody Admin admin) {
-        try {
-            userService.updatePassword(admin);
-            return "成功更新";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public ApiResponse<Boolean>  updatePassword(@RequestBody Admin admin,HttpServletRequest request) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        // 获取请求头中的Token
+        String tokenAuthorization = request.getHeader("Authorization");
+        // 判断是否是Bearer Token格式
+        if (tokenAuthorization.startsWith("Bearer ")) {
+            // 获取实际的Token值
+            String token = tokenAuthorization.substring(7);
+            Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
+            boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
+            if (isToken) {
+                System.out.println("token校验成功！updatePassword");
+                //    处理业务
+                try {
+                    userService.updatePassword(admin);
+                    response.setCode("1");
+                    response.setMsg("操作成功");
+                    response.setResult(true);
+                    return response;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+
+        return response;
+
     }
+
+
+
 
 //   普通用户的api
     @GetMapping("/findAllUser")
     @ResponseBody
-    public List<User> findAllUser(){
+    public ApiResponse<List<User>> findAllUser(){
+        ApiResponse<List<User>> response = new ApiResponse<>();
         System.out.println("表现层--查询所有用户");
         try {
             //调用service的方法
             List<User> userList = userService.findAllUser();
-            return userList;
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(userList);
+            return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -172,10 +296,14 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
     //增
     @PostMapping("/addUser")
     @ResponseBody
-    public String adduserList(@RequestBody User user) {
+    public ApiResponse<Boolean> adduserList(@RequestBody User user,HttpServletRequest request) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
         try {
             userService.addUser(user);
-            return "成功添加";
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(true);
+            return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -185,12 +313,16 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
     //删
     @PostMapping("/deleteUser")
     @ResponseBody
-    public String deleteUser(@RequestBody Map<String, Object> requestBody) {
+    public  ApiResponse<Boolean> deleteUser(@RequestBody Map<String, Object> requestBody,HttpServletRequest request) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
         // 从请求体中获取 userId
         int id = (int) requestBody.get("user_id");
         try {
             userService.deleteUser(id);
-            return "成功删除";
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(true);
+            return response;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -199,16 +331,105 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
 
     @PostMapping("/updateUser")
     @ResponseBody
-    public String updateUser(@RequestBody User user) {
-        try {
-            userService.updateUser(user);
-            return "成功更新";
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+    public  ApiResponse<Boolean> updateUser(@RequestBody User user,HttpServletRequest request) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        // 获取请求头中的Token
+        String tokenAuthorization = request.getHeader("Authorization");
+        if (tokenAuthorization.startsWith("Bearer ")) {
+            // 获取实际的Token值
+            String token = tokenAuthorization.substring(7);
+            User oldUser=userService.getLoginCommonById(user.getUser_id());// 7是 "Bearer " 的长度
+            boolean isToken=  userService.isCommonToken(token,oldUser.getToken());
+            if (isToken) {
+                System.out.println("token校验成功！updateUser");
+                //    处理业务
+                try {
+                    userService.updateUser(user);
+                    response.setCode("1");
+                    response.setMsg("操作成功");
+                    response.setResult(true);
+                    return response;
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+        
+            return null;
+
 
     }
 
+    @PostMapping("/loginUser")
+    @ResponseBody
+    public ResponseEntity<?> loginUser(@RequestBody User user, HttpSession session) {
+        // 根据用户名从数据库中查询用户信息
+        User user1 = userService.selectUserCommonByNameAndPassword(user);
+        String password = user.getPassword();
+        if (user1 != null && user1.getPassword().equals(password)) {
+            // 登录成功，生成token
+            String token = generateTokenUser(user1);
+            // 将token放入响应头中
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + token);
+            user1.setToken(token);
+            userService.updateCommonToken(user1);
+            User newUser=userService.selectUserCommonByNameAndPassword(user);
+            return new ResponseEntity<>(newUser, headers, HttpStatus.OK);
+        } else {
+            // 登录失败
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("用户名或密码错误");
+        }
+    }
+    @PostMapping("/resetCommonToken")
+    @ResponseBody
+    public ApiResponse<String>  resetCommonToken(@RequestBody User user){
+        ApiResponse<String> response = new ApiResponse<>();
+        try {
+            userService.updateCommonToken(user);
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult("重置token成功！");
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/getLoginCommonById")
+    @ResponseBody
+    public ResponseEntity<?> getLoginCommonById(@RequestBody Map<String, Object> requestBody, HttpServletRequest request){
+        //        获取id
+        int id = (int) requestBody.get("user_id");
+         //处理token
+        // 获取请求头中的Token
+        String tokenAuthorization = request.getHeader("Authorization");
+        // 判断是否是Bearer Token格式
+        if (tokenAuthorization.startsWith("Bearer ")) {
+
+            // 获取实际的Token值
+            String token = tokenAuthorization.substring(7);
+            User oldUser=userService.getLoginCommonById(id);// 7是 "Bearer " 的长度
+            boolean isToken=  userService.isCommonToken(token,oldUser.getToken());
+            if(isToken){
+                System.out.println("token校验成功！getLoginCommonById");
+                //    处理业务
+                User newUser=userService.getLoginCommonById(id);
+//                String newToken = generateTokenUser(newUser);
+//                // 将token放入响应头中
+//                HttpHeaders headers = new HttpHeaders();
+//                headers.add("Authorization", "Bearer " + newToken);
+//                newUser.setToken(newToken);
+//                userService.updateCommonToken(newUser);
+//                return new ResponseEntity<>(newUser, headers, HttpStatus.OK);
+                return new ResponseEntity<>(newUser, HttpStatus.OK);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
+
+    }
+
+//日期情况
 
     @GetMapping("/getUserState")
     @ResponseBody
@@ -243,28 +464,46 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
 
     @PostMapping("/selectByAccount")
     @ResponseBody
-    public String selectByAccount(@RequestBody Map<String, Object> requestBody){
+    public ApiResponse<String> selectByAccount(@RequestBody Map<String, Object> requestBody){
+        ApiResponse<String> response = new ApiResponse<>();
         int account = (int) requestBody.get("account");
        Admin admin= userService.selectByAccount(account);
        if(admin!=null){
-           return "account存在";
+           response.setCode("1");
+           response.setMsg("操作成功");
+           response.setResult("account存在");
+           return response;
+
        }
        else {
-           return "account不存在";
+           response.setCode("1");
+           response.setMsg("操作成功");
+           response.setResult("account不存在");
+           return response;
+
        }
     }
 
     @PostMapping("/selectByAccountUser")
     @ResponseBody
-    public String selectByAccountUser(@RequestBody Map<String, Object> requestBody){
+    public ApiResponse<String> selectByAccountUser(@RequestBody Map<String, Object> requestBody){
+        ApiResponse<String> response = new ApiResponse<>();
         int account = (int) requestBody.get("account");
         User user= userService.selectByAccountUser(account);
         if(user!=null){
-            return "account存在";
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult("account存在");
+            return response;
         }
         else {
-            return "account不存在";
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult("account不存在");
+            return response;
         }
     }
+
+
 }
 

@@ -3,6 +3,7 @@ package com.ssmtest.dao;
 
 import com.ssmtest.entity.Book;
 import com.ssmtest.entity.Category;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +21,6 @@ public interface BookDao {
     int selectBookMonthAdd();
     int selectBookMonthOut();
     Category getMonthSaleList(String category);
+    List<Book> getBooksGuessLike(@Param("offset") int offset, @Param("pageSize") int pageSize);
+    int getTotalCount();
 }
