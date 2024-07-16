@@ -11,5 +11,5 @@ public class Address implements Serializable {
     private String phone;
     private String bigAddress;
     private String fullAddress;
-    private Integer  isDefault;
+    private Integer isDefault;
 }

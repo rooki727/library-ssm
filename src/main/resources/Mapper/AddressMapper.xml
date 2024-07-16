@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssmtest.dao.AddressDao">
+    <!-- 查询id所有address -->
+    <select id="getAddressListById" resultType="com.ssmtest.entity.Address">
+        SELECT * FROM address where user_id = #{user_id}
+    </select>
+    <!-- Address -->
+    <delete id="deleteAddressById" parameterType="com.ssmtest.entity.Address">
+        DELETE FROM address WHERE address_id = #{address_id}
+    </delete>
+    <!-- 添加Address -->
+    <insert id="addAddress" parameterType="com.ssmtest.entity.Address">
+        INSERT INTO address (user_id,receiver,phone,bigAddress,fullAddress,isDefault)
+        VALUES(#{user_id},#{receiver}, #{phone}, #{bigAddress}, #{fullAddress}, #{isDefault})
+    </insert>
+
+    <select id="getAddressById" resultType="com.ssmtest.entity.Address">
+        SELECT * FROM address where address_id = #{address_id}
+    </select>
+
+    <!-- 更新updateAddress信息 -->
+    <update id="updateAddress" parameterType="com.ssmtest.entity.Address">
+        UPDATE address SET receiver = #{receiver},phone = #{phone},
+                           bigAddress = #{bigAddress},fullAddress = #{fullAddress},
+                           isDefault = #{isDefault}
+        WHERE address_id = #{address_id}
+    </update>
+    <!-- 更新updateAddressIsDefault信息 -->
+    <update id="updateAddressIsDefault" parameterType="com.ssmtest.entity.Address">
+        UPDATE address SET  isDefault = #{isDefault}
+        WHERE address_id = #{address_id}
+    </update>
+</mapper>

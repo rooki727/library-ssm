@@ -15,7 +15,8 @@ public class Book implements Serializable {
     private String author;
     private String category;
     private Double price;
-    private String status;
+    private Integer stock;
+    private Integer sale_number;
     private Date buildTime;
     private String picture;
     private String main_picture;

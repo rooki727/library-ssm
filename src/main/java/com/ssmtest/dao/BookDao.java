@@ -23,4 +23,7 @@ public interface BookDao {
     Category getMonthSaleList(String category);
     List<Book> getBooksGuessLike(@Param("offset") int offset, @Param("pageSize") int pageSize);
     int getTotalCount();
+
+    String getGuessName();
+    int selectAllCount();
 }

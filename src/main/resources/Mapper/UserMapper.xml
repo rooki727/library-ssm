@@ -77,13 +77,13 @@
             </if>
         </set>
 
-                          WHERE user_id = #{user_id}
+        WHERE user_id = #{user_id}
     </update>
 
     <!-- 添加User -->
     <insert id="addUser" parameterType="com.ssmtest.entity.User">
-        INSERT INTO commonuser(name,account,password,verify,gender,phone,email,buildTime)
-        VALUES(#{name}, #{account}, #{password}, #{verify}, #{gender}, #{phone}, #{email},#{buildTime})
+        INSERT INTO commonuser(name,account,password,verify,gender,phone,email,buildTime,birthday)
+        VALUES(#{name}, #{account}, #{password}, #{verify}, #{gender}, #{phone}, #{email},#{buildTime},#{birthday})
     </insert>
     <!-- 删除用户 -->
     <delete id="deleteUser" parameterType="com.ssmtest.entity.User">

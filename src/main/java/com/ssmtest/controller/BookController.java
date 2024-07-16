@@ -70,6 +70,20 @@ public class BookController {
 
     }
 
+    @GetMapping("/getTotalPage")
+    @ResponseBody
+    public ApiResponse<Number>  getTotalPage(){
+        ApiResponse<Number> response = new ApiResponse<>();
+        try {
+            response.setCode("1");
+            response.setMsg("操作成功");
+            int totalPages = bookService.getTotalPages(4);
+            response.setResult(totalPages);
+            return response;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 
     @GetMapping("/findCategory")
     @ResponseBody
@@ -169,5 +183,21 @@ public class BookController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @GetMapping("/getGuessName")
+    @ResponseBody
+    public ApiResponse<String>  getGuessName(){
+        ApiResponse<String> response = new ApiResponse<>();
+        try {
+            String rndName=bookService.getGuessName();
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(rndName);
+            return response;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+
     }
 }

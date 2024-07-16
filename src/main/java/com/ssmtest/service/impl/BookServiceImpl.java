@@ -71,4 +71,15 @@ public class BookServiceImpl implements BookService {
         int totalCount = bookDao.getTotalCount();
         return (int) Math.ceil((double) totalCount / pageSize);
     }
+
+    @Override
+    public String getGuessName() {
+        return bookDao.getGuessName();
+    }
+
+    @Override
+    public int selectAllCount() {
+        return bookDao.selectAllCount();
+    }
+
 }

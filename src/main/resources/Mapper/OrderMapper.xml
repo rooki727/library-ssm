@@ -30,12 +30,13 @@
 
 <!--  获取订单日月信息-->
     <select id="getTodayOrderAdd" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY) AND order_status ="已完成"
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY) AND order_status ="待评价"
     </select>
     <select id="getMonthSaleCount" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="已完成"
-    </select> <select id="getMonthMoney" resultType="java.lang.Integer">
-    SELECT SUM(price)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="已完成"
-</select>
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="待评价"
+    </select>
+    <select id="getMonthMoney" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(price), 0) FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="待评价"
+    </select>
 
 </mapper>

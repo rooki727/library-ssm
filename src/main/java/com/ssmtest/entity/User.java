@@ -28,6 +28,9 @@ public class User implements Serializable {
     }
     public String getFormattedBirthday() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        return formatter.format(birthday);
+        if(birthday.toString().length()>0){
+            return formatter.format(birthday);
+        }
+      return null;
     }
 }

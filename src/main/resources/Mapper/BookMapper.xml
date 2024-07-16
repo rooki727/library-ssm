@@ -9,26 +9,30 @@
     <select id="findAllBook" resultType="com.ssmtest.entity.Book">
         SELECT * FROM booklist
     </select>
-
+    <!-- 查询所有book -->
+    <select id="selectAllCount" resultType="int">
+        SELECT COUNT(*)  FROM booklist
+    </select>
 
 <!--查询分类情况-->
     <select id="findCategory" resultType="com.ssmtest.entity.Category">
-        SELECT COUNT(*) as "value", #{category} as "category" FROM booklist WHERE category = #{category}
+        SELECT   IFNULL(SUM(stock), 0) as "value", #{category} as "category" FROM booklist WHERE category = #{category}
     </select>
 
 
     <!-- 更新book信息 -->
     <update id="updateBook" parameterType="com.ssmtest.entity.Book">
         UPDATE booklist SET book_name = #{book_name}, author = #{author}, category = #{category},
-                            price = #{price},status = #{status},
+                            price = #{price},stock= #{stock},sale_number= #{sale_number},
                             picture = #{picture},main_picture = #{main_picture},introduce = #{introduce}
         WHERE book_id = #{book_id}
     </update>
 
     <!-- 添加book -->
     <insert id="addBook" parameterType="com.ssmtest.entity.Book">
-        INSERT INTO booklist (book_name,author,category,price,status,buildTime,picture,main_picture,introduce)
-        VALUES(#{book_name}, #{author}, #{category}, #{price}, #{status}, #{buildTime},#{picture},#{main_picture},#{introduce})
+        INSERT INTO booklist (book_name,author,category,price,buildTime,picture,main_picture,introduce,stock)
+        VALUES(#{book_name}, #{author}, #{category}, #{price}, #{buildTime},
+               #{picture},#{main_picture},#{introduce},#{stock})
     </insert>
     <!-- 删除book -->
     <delete id="deleteBook" parameterType="com.ssmtest.entity.Book">
@@ -37,29 +41,32 @@
 
 <!--    统计book日月进出量-->
     <select id="selectBookMonthAdd" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM booklist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status ="未出库"
+        SELECT COUNT(*)  FROM booklist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     </select>
 
     <select id="selectBookTodayAdd" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM booklist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY) AND status ="未出库"
+        SELECT COUNT(*)  FROM booklist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY)
     </select>
 
     <select id="selectBookMonthOut" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM booklist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status ="已出库"
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     </select>
 
     <!--查询分类月销售情况-->
     <select id="getMonthSaleList" resultType="com.ssmtest.entity.Category">
-        SELECT COUNT(*) as "value", #{category} as "category" FROM booklist WHERE category = #{category}
-                                                                              AND status ="已出库"
-                                                                              AND buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        SELECT IFNULL(SUM(sale_number), 0) as "value", #{category} as "category" FROM booklist WHERE category = #{category}
     </select>
 
     <select id="getBooksGuessLike" resultType="com.ssmtest.entity.Book">
         SELECT * FROM booklist
-                          LIMIT #{pageSize} OFFSET #{offset}
+        LIMIT #{pageSize} OFFSET #{offset}
     </select>
     <select id="getTotalCount" resultType="int">
         SELECT COUNT(*) FROM booklist
+    </select>
+    <select id="getGuessName" resultType="String">
+        SELECT book_name FROM booklist
+        ORDER BY RAND()
+            LIMIT 1;
     </select>
 </mapper>

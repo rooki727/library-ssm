@@ -16,4 +16,29 @@ private AddressDao addressDao;
     public List<Address> getAddressListById(int user_id) {
         return addressDao.getAddressListById(user_id);
     }
+
+    @Override
+    public void deleteAddressById(int address_id) {
+        addressDao.deleteAddressById(address_id);
+    }
+
+    @Override
+    public void addAddress(Address address) {
+        addressDao.addAddress(address);
+    }
+
+    @Override
+    public Address getAddressById(int address_id) {
+        return addressDao.getAddressById(address_id);
+    }
+
+    @Override
+    public void updateAddress(Address address) {
+         addressDao.updateAddress(address);
+    }
+
+    @Override
+    public void updateAddressIsDefault(Address address) {
+        addressDao.updateAddressIsDefault(address);
+    }
 }
