@@ -56,8 +56,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Category getMonthSaleList(String category) {
-        return bookDao.getMonthSaleList(category);
+    public Category getCategorySaleList(String category) {
+        return bookDao.getCategorySaleList(category);
     }
     @Override
     public List<Book> getGuessLikeBooks(int page, int pageSize) {
@@ -80,6 +80,28 @@ public class BookServiceImpl implements BookService {
     @Override
     public int selectAllCount() {
         return bookDao.selectAllCount();
+    }
+
+    @Override
+    public Book getCategoryFirstBook(String category) {
+        return bookDao.getCategoryFirstBook(category);
+    }
+
+    @Override
+    public List<Book> getBookByCategory(String category,int page,int pageSize) {
+        // 在这里可以调用DAO层方法，访问数据库
+        int offset = (page - 1) * pageSize;
+        return bookDao.getBookByCategory(category,offset,pageSize);
+    }
+
+    @Override
+    public List<Book> fuzzyQueriesBookName(String book_name) {
+        return bookDao.fuzzyQueriesBookName(book_name);
+    }
+
+    @Override
+    public Book getBookById(int book_id) {
+        return bookDao.getBookById(book_id);
     }
 
 }

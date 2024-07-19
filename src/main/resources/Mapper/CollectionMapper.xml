@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssmtest.dao.CollectionDao">
+    <!-- 查询是否收藏 -->
+    <select id="getBookCollect" resultType="com.ssmtest.entity.BookCollection">
+        SELECT * FROM bookCollection WHERE user_id=#{user_id} AND book_id=#{book_id}
+    </select>
+<!--    添加收藏-->
+    <insert id="addCollection" parameterType="com.ssmtest.entity.Book">
+        INSERT INTO bookCollection (user_id,book_id)
+        VALUES(#{user_id}, #{book_id})
+    </insert>
+<!--    取消收藏-->
+    <delete id="deleteCollection" parameterType="com.ssmtest.entity.Book">
+        DELETE FROM bookCollection WHERE user_id=#{user_id} AND book_id=#{book_id}
+    </delete>
+</mapper>

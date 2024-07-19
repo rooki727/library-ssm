@@ -12,6 +12,7 @@ public class Order implements Serializable {
     private Integer book_id;
     private Integer user_id;
     private Double price;
+    private Integer count;
     private String order_status;
     private String summary_status;
     private Date buildTime;

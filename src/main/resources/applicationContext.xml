@@ -29,6 +29,8 @@
                 <value>classpath:Mapper/OrderMapper.xml</value>
                 <value>classpath:Mapper/SummaryMapper.xml</value>
                 <value>classpath:Mapper/AddressMapper.xml</value>
+                <value>classpath:Mapper/CartMapper.xml</value>
+                <value>classpath:Mapper/CollectionMapper.xml</value>
             </list>
         </property>
         <!--实体列别名-->

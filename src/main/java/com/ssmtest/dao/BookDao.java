@@ -20,10 +20,15 @@ public interface BookDao {
     int selectBookTodayAdd();
     int selectBookMonthAdd();
     int selectBookMonthOut();
-    Category getMonthSaleList(String category);
+    Category getCategorySaleList(String category);
     List<Book> getBooksGuessLike(@Param("offset") int offset, @Param("pageSize") int pageSize);
     int getTotalCount();
 
     String getGuessName();
     int selectAllCount();
+    Book getCategoryFirstBook(String category);
+    List<Book> getBookByCategory(@Param("category") String category,@Param("offset") int offset, @Param("pageSize") int pageSize);
+    List<Book> fuzzyQueriesBookName(@Param("book_name") String book_name);
+
+    Book getBookById(int book_id);
 }

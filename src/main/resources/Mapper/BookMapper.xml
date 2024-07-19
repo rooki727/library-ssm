@@ -53,7 +53,7 @@
     </select>
 
     <!--查询分类月销售情况-->
-    <select id="getMonthSaleList" resultType="com.ssmtest.entity.Category">
+    <select id="getCategorySaleList" resultType="com.ssmtest.entity.Category">
         SELECT IFNULL(SUM(sale_number), 0) as "value", #{category} as "category" FROM booklist WHERE category = #{category}
     </select>
 
@@ -68,5 +68,30 @@
         SELECT book_name FROM booklist
         ORDER BY RAND()
             LIMIT 1;
+    </select>
+<!--   查询获取各榜单的两本书-->
+    <select id="getCategoryFirstBook" resultType="com.ssmtest.entity.Book">
+        SELECT *
+        FROM booklist
+        WHERE category = #{category}
+        ORDER BY sale_number DESC
+            LIMIT 1;
+    </select>
+<!--根据分类获取book列表-->
+    <select id="getBookByCategory" resultType="com.ssmtest.entity.Book">
+        SELECT *
+        FROM booklist
+        WHERE category = #{category}
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+<!--    根据书名进行模糊查询-->
+    <select id="fuzzyQueriesBookName" resultType="com.ssmtest.entity.Book">
+        SELECT * FROM booklist
+        WHERE book_name LIKE CONCAT('%', #{book_name}, '%')
+    </select>
+
+    <!-- 查询book通过id -->
+    <select id="getBookById" resultType="com.ssmtest.entity.Book">
+        SELECT * FROM booklist WHERE book_id = #{book_id}
     </select>
 </mapper>

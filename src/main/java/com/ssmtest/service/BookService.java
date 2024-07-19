@@ -15,9 +15,13 @@ public interface BookService {
     int selectBookMonthAdd();
     int selectBookMonthOut();
 
-    Category getMonthSaleList(String category);
+    Category getCategorySaleList(String category);
     List<Book> getGuessLikeBooks(int page, int pageSize);
     int getTotalPages(int pageSize);
     String getGuessName();
     int selectAllCount();
+    Book getCategoryFirstBook(String category);
+    List<Book> getBookByCategory(String category,int page,int pageSize);
+    List<Book> fuzzyQueriesBookName(String book_name);
+    Book getBookById(int book_id);
 }
