@@ -31,4 +31,6 @@ public interface BookDao {
     List<Book> fuzzyQueriesBookName(@Param("book_name") String book_name);
 
     Book getBookById(int book_id);
+    String getGuessNameByCategory(String category);
+    int getTotalPageByCategory(String category);
 }

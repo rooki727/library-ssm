@@ -24,4 +24,6 @@ public interface BookService {
     List<Book> getBookByCategory(String category,int page,int pageSize);
     List<Book> fuzzyQueriesBookName(String book_name);
     Book getBookById(int book_id);
+    String getGuessNameByCategory(String category);
+    int getTotalPageByCategory(int pageSize,String category);
 }

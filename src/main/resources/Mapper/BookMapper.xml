@@ -94,4 +94,12 @@
     <select id="getBookById" resultType="com.ssmtest.entity.Book">
         SELECT * FROM booklist WHERE book_id = #{book_id}
     </select>
+    <select id="getGuessNameByCategory" resultType="String">
+        SELECT book_name FROM booklist WHERE category=#{category}
+        ORDER BY RAND()
+            LIMIT 1;
+    </select>
+    <select id="getTotalPageByCategory" resultType="int">
+        SELECT COUNT(*) FROM booklist WHERE category=#{category}
+    </select>
 </mapper>

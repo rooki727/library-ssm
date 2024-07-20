@@ -277,4 +277,37 @@ public ApiResponse<List<Book>>  getBookByCategory(@RequestParam("category") Stri
         }
 
     }
+
+    @PostMapping("/getGuessNameByCategory")
+    @ResponseBody
+    public ApiResponse<String>  getGuessNameByCategory(@RequestBody Map<String, Object> requestBody){
+        String category = (String) requestBody.get("category");
+        ApiResponse<String> response = new ApiResponse<>();
+        try {
+            String rndName=bookService.getGuessNameByCategory(category);
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(rndName);
+            return response;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/getTotalPageByCategory")
+    @ResponseBody
+    public ApiResponse<Integer>  getTotalPageByCategory(@RequestBody Map<String, Object> requestBody){
+        String category = (String) requestBody.get("category");
+        ApiResponse<Integer> response = new ApiResponse<>();
+        try {
+            int totalPageByCategory=bookService.getTotalPageByCategory(4,category);
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(totalPageByCategory);
+            return response;
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
 }

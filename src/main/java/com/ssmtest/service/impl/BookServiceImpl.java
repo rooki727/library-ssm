@@ -104,4 +104,13 @@ public class BookServiceImpl implements BookService {
         return bookDao.getBookById(book_id);
     }
 
+    @Override
+    public String getGuessNameByCategory(String category) {
+        return bookDao.getGuessNameByCategory(category);
+    }
+    @Override
+    public int getTotalPageByCategory(int pageSize,String category) {
+        int totalCount = bookDao.getTotalPageByCategory(category);
+        return (int) Math.ceil((double) totalCount / pageSize);
+    }
 }
