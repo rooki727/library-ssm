@@ -8,4 +8,30 @@
     <select id="getCartCountById" resultType="int">
         SELECT IFNULL(SUM(number), 0) FROM cart WHERE user_id=#{user_id}
     </select>
+<!--  根据user_id查询cart的信息  -->
+    <select id="findBookCartByUserId" resultType="com.ssmtest.entity.CartBook">
+        SELECT
+            c.cart_id, c.book_id, c.user_id, c.number, c.isSelected, c.buildTime,
+            b.book_name, b.author, b.category, b.price, b.stock, b.sale_number, b.main_picture, b.introduce,b.press
+        FROM
+            cart c
+                JOIN
+            booklist b ON c.book_id = b.book_id
+        WHERE
+            c.user_id = #{userId}
+    </select>
+
+    <!-- 更新cart信息 -->
+    <update id="updateCartSelect" parameterType="com.ssmtest.entity.Cart">
+        UPDATE cart SET isSelected = #{isSelected}
+        WHERE cart_id = #{cart_id}
+    </update>
+    <update id="updateCartNumber" parameterType="com.ssmtest.entity.Cart">
+        UPDATE cart SET number = #{number}
+        WHERE cart_id = #{cart_id}
+    </update>
+    <!-- 删除cart -->
+    <delete id="deleteMemberCart" parameterType="com.ssmtest.entity.Cart">
+        DELETE FROM cart WHERE cart_id = #{cart_id}
+    </delete>
 </mapper>

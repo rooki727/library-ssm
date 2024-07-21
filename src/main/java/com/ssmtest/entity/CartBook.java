@@ -1,16 +1,19 @@
 package com.ssmtest.entity;
 
-
 import lombok.Data;
+
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
-public class Book implements Serializable {
+public class CartBook implements Serializable {
+    private Integer cart_id;
     private Integer book_id;
+    private Integer user_id;
+    private Integer number;
+    private Integer isSelected;
+    private Date buildTime;
+//书本部分拿的
     private String book_name;
     private String author;
     private String category;
@@ -18,16 +21,10 @@ public class Book implements Serializable {
     private Double price;
     private Integer stock;
     private Integer sale_number;
-    private Date buildTime;
-    private String picture;
     private String main_picture;
     private String introduce;
-    private List<Picture> pictureList;
     public String getFormattedBuildTime() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         return formatter.format(buildTime);
     }
-
-    }
-
-
+}
