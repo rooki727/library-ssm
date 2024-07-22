@@ -96,4 +96,27 @@ public class CartController {
         }
     }
 
+    @PostMapping("/addBookCart")
+    @ResponseBody
+    public ApiResponse<Boolean> addBookCart(@RequestBody Cart cart){
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        try {
+            Cart cartFind=cartService.findCartByUserBook(cart);
+            if(cartFind!=null){
+             cart.setCart_id(cartFind.getCart_id());
+//                存在时更新数量
+                cartService.AddCartNumber(cart);
+            }
+            else {
+//                不存在时添加
+                cartService.addBookCart(cart);
+            }
+            response.setCode("1");
+            response.setMsg("操作成功");
+            response.setResult(true);
+            return response;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

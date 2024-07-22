@@ -1,10 +1,13 @@
 package com.ssmtest.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
+import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.text.SimpleDateFormat;
+
+
 @Data
 public class CartBook implements Serializable {
     private Integer cart_id;
@@ -12,6 +15,8 @@ public class CartBook implements Serializable {
     private Integer user_id;
     private Integer number;
     private Integer isSelected;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",locale = "zh", timezone = "GMT+8")
     private Date buildTime;
 //书本部分拿的
     private String book_name;
@@ -23,8 +28,4 @@ public class CartBook implements Serializable {
     private Integer sale_number;
     private String main_picture;
     private String introduce;
-    public String getFormattedBuildTime() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        return formatter.format(buildTime);
-    }
 }

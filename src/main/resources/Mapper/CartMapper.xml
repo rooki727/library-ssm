@@ -26,12 +26,28 @@
         UPDATE cart SET isSelected = #{isSelected}
         WHERE cart_id = #{cart_id}
     </update>
+<!--    购物车直接加减数量-->
     <update id="updateCartNumber" parameterType="com.ssmtest.entity.Cart">
         UPDATE cart SET number = #{number}
         WHERE cart_id = #{cart_id}
     </update>
+
     <!-- 删除cart -->
     <delete id="deleteMemberCart" parameterType="com.ssmtest.entity.Cart">
         DELETE FROM cart WHERE cart_id = #{cart_id}
     </delete>
+    <!--根据user_id和book_id查询购物车信息-->
+    <select id="findCartByUserBook" resultType="com.ssmtest.entity.Cart">
+        SELECT * FROM cart WHERE user_id=#{user_id} AND book_id=#{book_id}
+    </select>
+    <!-- 添加cart -->
+    <insert id="addBookCart" parameterType="com.ssmtest.entity.Cart">
+        INSERT INTO cart (user_id,book_id,number,buildTime)
+        VALUES(#{user_id}, #{book_id}, #{number}, #{buildTime})
+    </insert>
+    <!--    购物车再次添加相同物品-->
+    <update id="AddCartNumber" parameterType="com.ssmtest.entity.Cart">
+        UPDATE cart SET number =number+ #{number} ,buildTime=#{buildTime}
+        WHERE cart_id = #{cart_id}
+    </update>
 </mapper>
