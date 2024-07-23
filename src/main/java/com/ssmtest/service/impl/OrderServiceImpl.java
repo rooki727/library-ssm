@@ -2,6 +2,8 @@ package com.ssmtest.service.impl;
 
 import com.ssmtest.dao.OrderDao;
 import com.ssmtest.entity.Order;
+import com.ssmtest.entity.OrderBook;
+import com.ssmtest.entity.OrderDetail;
 import com.ssmtest.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,5 +48,25 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public int getMonthMoney() {
         return orderDao.getMonthMoney();
+    }
+
+    @Override
+    public void addOrderList(Order order) {
+        orderDao.addOrderList(order);
+    }
+
+    @Override
+    public int getOrderIdAfterInsert(Order order) {
+        return orderDao.getOrderIdAfterInsert(order);
+    }
+
+    @Override
+    public void addOrderDetail(OrderDetail orderDetail) {
+        orderDao.addOrderDetail(orderDetail);
+    }
+
+    @Override
+    public List<OrderBook> getOrderDetailsWithBooks(int order_id) {
+        return orderDao.getOrderDetailsWithBooks(order_id);
     }
 }

@@ -30,13 +30,40 @@
 
 <!--  获取订单日月信息-->
     <select id="getTodayOrderAdd" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY) AND order_status ="待评价"
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY)
     </select>
     <select id="getMonthSaleCount" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="待评价"
+        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND  (order_status ="待评价" OR order_status ="已完成");
     </select>
     <select id="getMonthMoney" resultType="java.lang.Integer">
-        SELECT IFNULL(SUM(price), 0) FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND order_status ="待评价"
+        SELECT IFNULL(SUM(price), 0) FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND  (order_status ="待评价" OR order_status ="已完成");
     </select>
-
+    <insert id="addOrderList" parameterType="com.ssmtest.entity.Order">
+        INSERT INTO orderlist (user_id, number, order_money, buildTime)
+        VALUES (#{user_id}, #{number}, #{order_money}, #{buildTime})
+    </insert>
+    <select id="getOrderIdAfterInsert" parameterType="com.ssmtest.entity.Order" resultType="java.lang.Integer">
+        SELECT LAST_INSERT_ID()
+    </select>
+<!--    插入订单详情-->
+    <insert id="addOrderDetail" parameterType="com.ssmtest.entity.OrderDetail">
+        INSERT INTO orderdetail (book_id, order_id, detail_number)
+        VALUES (#{book_id}, #{order_id}, #{detail_number})
+    </insert>
+    <!-- 查询订单详细信息，包括订单详情和书籍信息 -->
+    <select id="getOrderDetailsWithBooks" resultType="com.ssmtest.entity.OrderBook">
+        SELECT
+            od.order_detail_id, od.book_id, od.detail_number,
+            ol.order_id, ol.user_id, ol.order_money, ol.number,
+            ol.order_status, ol.summary_status, ol.buildTime,
+            b.book_name, b.price, b.main_picture
+        FROM
+            orderdetail od
+                JOIN
+            orderlist ol ON od.order_id = ol.order_id
+                JOIN
+            booklist b ON od.book_id = b.book_id
+        WHERE
+            od.order_id = #{order_id}
+    </select>
 </mapper>

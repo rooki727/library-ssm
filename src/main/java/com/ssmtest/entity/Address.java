@@ -12,4 +12,5 @@ public class Address implements Serializable {
     private String bigAddress;
     private String fullAddress;
     private Integer isDefault;
+    private Double freight;
 }

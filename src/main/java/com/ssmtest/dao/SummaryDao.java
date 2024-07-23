@@ -11,4 +11,5 @@ public interface SummaryDao {
     List<Summary> findAllSummary();
 
     void addSummary(Summary summary);
+    void deleteSummary(int summary_id);
  }

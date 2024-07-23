@@ -8,4 +8,5 @@ public interface SummaryService {
     List<Summary> findAllSummary();
 
     void addSummary(Summary summary);
+    void deleteSummary(int summary_id);
 }

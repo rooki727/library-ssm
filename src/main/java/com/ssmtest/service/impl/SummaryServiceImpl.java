@@ -23,4 +23,9 @@ public class SummaryServiceImpl implements SummaryService {
     public void addSummary(Summary summary) {
         summaryDao.addSummary(summary);
     }
+
+    @Override
+    public void deleteSummary(int summary_id) {
+        summaryDao.deleteSummary(summary_id);
+    }
 }

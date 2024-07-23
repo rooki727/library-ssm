@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @Controller
@@ -38,6 +39,16 @@ public class SummaryController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
+    }
+    @PostMapping("/deleteSummary")
+    @ResponseBody
+    public String deleteSummary(@RequestBody Map<String, Object> requestBody){
+        int summary_id = (int) requestBody.get("summary_id");
+        try {
+            summaryService.deleteSummary(summary_id);
+            return "成功删除";
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

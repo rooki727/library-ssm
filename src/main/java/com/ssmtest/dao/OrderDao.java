@@ -2,6 +2,8 @@ package com.ssmtest.dao;
 
 
 import com.ssmtest.entity.Order;
+import com.ssmtest.entity.OrderBook;
+import com.ssmtest.entity.OrderDetail;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +19,8 @@ public interface OrderDao {
     int getTodayOrderAdd();
     int getMonthSaleCount();
     int getMonthMoney();
-
-
+    void addOrderList(Order order);
+    int getOrderIdAfterInsert(Order order);
+    void addOrderDetail(OrderDetail orderDetail);
+    List<OrderBook> getOrderDetailsWithBooks(int order_id);
 }

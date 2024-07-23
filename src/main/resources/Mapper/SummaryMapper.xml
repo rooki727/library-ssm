@@ -15,5 +15,8 @@
         INSERT INTO summarylist (user_id,totalMoney,totalCount,buildTime)
         VALUES( #{user_id}, #{totalMoney}, #{totalCount}, #{buildTime})
     </insert>
-
+    <!-- 删除Summary -->
+    <delete id="deleteSummary" parameterType="com.ssmtest.entity.Summary">
+        DELETE FROM summarylist WHERE summary_id = #{summary_id}
+    </delete>
 </mapper>
