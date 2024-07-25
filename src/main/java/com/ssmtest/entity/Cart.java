@@ -14,7 +14,7 @@ public class Cart implements Serializable {
     private Integer cart_id;
     private Integer book_id;
     private Integer user_id;
-    private Integer number;
+    private Integer detail_number;
     private Integer isSelected;
 //    标定前端传过来的数
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

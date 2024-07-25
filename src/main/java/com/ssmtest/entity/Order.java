@@ -16,6 +16,11 @@ public class Order implements Serializable {
     private String summary_status;
     private String remark;
     private String delivery;
+    private String order_address;
+    private Double order_freight;
+    private String receiver;
+    private String phone;
+    private String cancelReason;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",locale = "zh", timezone = "GMT+8")
     private Date buildTime;

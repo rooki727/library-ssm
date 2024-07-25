@@ -1,6 +1,7 @@
 package com.ssmtest.service.impl;
 
 import com.ssmtest.dao.OrderDao;
+import com.ssmtest.entity.Logistics;
 import com.ssmtest.entity.Order;
 import com.ssmtest.entity.OrderBook;
 import com.ssmtest.entity.OrderDetail;
@@ -66,7 +67,32 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderBook> getOrderDetailsWithBooks(int order_id) {
+    public List<OrderDetail> getOrderDetailsWithBooks(int order_id) {
         return orderDao.getOrderDetailsWithBooks(order_id);
+    }
+
+    @Override
+    public Order getOrderById(int order_id) {
+        return orderDao.getOrderById(order_id);
+    }
+
+    @Override
+    public void updateCancelReason(Order order) {
+        orderDao.updateCancelReason(order);
+    }
+
+    @Override
+    public void addNewLogistics(Logistics logistics) {
+        orderDao.addNewLogistics(logistics);
+    }
+
+    @Override
+    public List<Logistics> findLogisticsList(int order_id) {
+        return orderDao.findLogisticsList(order_id);
+    }
+
+    @Override
+    public int findCountStatus(int user_id,String order_status) {
+        return orderDao.findCountStatus(user_id,order_status);
     }
 }

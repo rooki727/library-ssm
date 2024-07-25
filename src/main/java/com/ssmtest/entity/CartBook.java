@@ -13,7 +13,7 @@ public class CartBook implements Serializable {
     private Integer cart_id;
     private Integer book_id;
     private Integer user_id;
-    private Integer number;
+    private Integer detail_number;
     private Integer isSelected;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",locale = "zh", timezone = "GMT+8")

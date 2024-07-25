@@ -33,14 +33,16 @@
         SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 1 DAY)
     </select>
     <select id="getMonthSaleCount" resultType="java.lang.Integer">
-        SELECT COUNT(*)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND  (order_status ="待评价" OR order_status ="已完成");
+        SELECT IFNULL(SUM(number), 0)  FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND  (order_status ="待评价" OR order_status ="已完成");
     </select>
     <select id="getMonthMoney" resultType="java.lang.Integer">
-        SELECT IFNULL(SUM(price), 0) FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND  (order_status ="待评价" OR order_status ="已完成");
+        SELECT IFNULL(SUM(order_money), 0) FROM orderlist WHERE buildTime >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND  (order_status ="待评价" OR order_status ="已完成");
     </select>
     <insert id="addOrderList" parameterType="com.ssmtest.entity.Order">
-        INSERT INTO orderlist (user_id, number, order_money, buildTime)
-        VALUES (#{user_id}, #{number}, #{order_money}, #{buildTime})
+        INSERT INTO orderlist (user_id, number, order_money, buildTime,remark,delivery,
+                               order_address,order_freight,receiver,phone)
+        VALUES (#{user_id}, #{number}, #{order_money}, #{buildTime}, #{remark}, #{delivery},
+                #{order_address}, #{order_freight}, #{receiver}, #{phone})
     </insert>
     <select id="getOrderIdAfterInsert" parameterType="com.ssmtest.entity.Order" resultType="java.lang.Integer">
         SELECT LAST_INSERT_ID()
@@ -51,11 +53,12 @@
         VALUES (#{book_id}, #{order_id}, #{detail_number})
     </insert>
     <!-- 查询订单详细信息，包括订单详情和书籍信息 -->
-    <select id="getOrderDetailsWithBooks" resultType="com.ssmtest.entity.OrderBook">
+    <select id="getOrderById" resultType="com.ssmtest.entity.Order">
+        SELECT * FROM orderlist where order_id = #{order_id}
+    </select>
+    <select id="getOrderDetailsWithBooks" resultType="com.ssmtest.entity.OrderDetail">
         SELECT
-            od.order_detail_id, od.book_id, od.detail_number,
-            ol.order_id, ol.user_id, ol.order_money, ol.number,
-            ol.order_status, ol.summary_status, ol.buildTime,
+            od.order_detail_id, od.book_id, od.detail_number,od.order_id,b.stock,
             b.book_name, b.price, b.main_picture
         FROM
             orderdetail od
@@ -65,5 +68,24 @@
             booklist b ON od.book_id = b.book_id
         WHERE
             od.order_id = #{order_id}
+    </select>
+<!--    更新取消原因-->
+    <update id="updateCancelReason" parameterType="com.ssmtest.entity.Order">
+        UPDATE orderlist SET cancelReason = #{cancelReason}
+        WHERE order_id = #{order_id}
+    </update>
+
+    <insert id="addNewLogistics" parameterType="com.ssmtest.entity.Logistics">
+        INSERT INTO logistics ( order_id, text, company_name,logistics_number,company_tel,time)
+        VALUES ( #{order_id}, #{text}, #{company_name}, #{logistics_number}, #{company_tel}, #{time})
+    </insert>
+<!--    找到所有物流信息列表-->
+    <select id="findLogisticsList" resultType="com.ssmtest.entity.Logistics">
+        SELECT * FROM logistics WHERE order_id = #{order_id}
+    </select>
+
+<!--    统计各状态下的订单数量-->
+    <select id="findCountStatus" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM orderlist WHERE user_id = #{user_id} AND order_status=#{order_status}
     </select>
 </mapper>

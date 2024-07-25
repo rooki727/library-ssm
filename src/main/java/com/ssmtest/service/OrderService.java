@@ -1,5 +1,6 @@
 package com.ssmtest.service;
 
+import com.ssmtest.entity.Logistics;
 import com.ssmtest.entity.Order;
 import com.ssmtest.entity.OrderBook;
 import com.ssmtest.entity.OrderDetail;
@@ -18,5 +19,10 @@ public interface OrderService {
     void addOrderList(Order order);
     int getOrderIdAfterInsert(Order order);
     void addOrderDetail(OrderDetail orderDetail);
-    List<OrderBook> getOrderDetailsWithBooks(int order_id);
+    List<OrderDetail> getOrderDetailsWithBooks(int order_id);
+    Order getOrderById(int order_id);
+    void updateCancelReason(Order order);
+    void addNewLogistics(Logistics logistics);
+    List<Logistics> findLogisticsList(int order_id);
+    int findCountStatus(int user_id,String order_status);
 }

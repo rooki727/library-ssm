@@ -6,12 +6,12 @@
 <mapper namespace="com.ssmtest.dao.CartDao">
     <!-- 根据user_id查询cart的数量-->
     <select id="getCartCountById" resultType="int">
-        SELECT IFNULL(SUM(number), 0) FROM cart WHERE user_id=#{user_id}
+        SELECT IFNULL(SUM(detail_number), 0) FROM cart WHERE user_id=#{user_id}
     </select>
 <!--  根据user_id查询cart的信息  -->
     <select id="findBookCartByUserId" resultType="com.ssmtest.entity.CartBook">
         SELECT
-            c.cart_id, c.book_id, c.user_id, c.number, c.isSelected, c.buildTime,
+            c.cart_id, c.book_id, c.user_id, c.detail_number, c.isSelected, c.buildTime,
             b.book_name, b.author, b.category, b.price, b.stock, b.sale_number, b.main_picture, b.introduce,b.press
         FROM
             cart c
@@ -28,7 +28,7 @@
     </update>
 <!--    购物车直接加减数量-->
     <update id="updateCartNumber" parameterType="com.ssmtest.entity.Cart">
-        UPDATE cart SET number = #{number}
+        UPDATE cart SET detail_number = #{detail_number}
         WHERE cart_id = #{cart_id}
     </update>
 
@@ -42,12 +42,12 @@
     </select>
     <!-- 添加cart -->
     <insert id="addBookCart" parameterType="com.ssmtest.entity.Cart">
-        INSERT INTO cart (user_id,book_id,number,buildTime)
-        VALUES(#{user_id}, #{book_id}, #{number}, #{buildTime})
+        INSERT INTO cart (user_id,book_id,detail_number,buildTime)
+        VALUES(#{user_id}, #{book_id}, #{detail_number}, #{buildTime})
     </insert>
     <!--    购物车再次添加相同物品-->
     <update id="AddCartNumber" parameterType="com.ssmtest.entity.Cart">
-        UPDATE cart SET number =number+ #{number} ,buildTime=#{buildTime}
+        UPDATE cart SET detail_number =detail_number+ #{detail_number} ,buildTime=#{buildTime}
         WHERE cart_id = #{cart_id}
     </update>
 </mapper>
