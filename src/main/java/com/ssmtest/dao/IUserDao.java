@@ -31,6 +31,7 @@ public interface IUserDao {
     void deleteUser(int id);
 
     void updateUser(User user);
+    void updateUserAvatar(User user);
     User selectUserCommonByNameAndPassword(User user);
     void updateCommonToken(User user);
 

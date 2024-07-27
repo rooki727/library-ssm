@@ -4,6 +4,7 @@ import com.ssmtest.entity.Logistics;
 import com.ssmtest.entity.Order;
 import com.ssmtest.entity.OrderBook;
 import com.ssmtest.entity.OrderDetail;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -25,4 +26,6 @@ public interface OrderService {
     void addNewLogistics(Logistics logistics);
     List<Logistics> findLogisticsList(int order_id);
     int findCountStatus(int user_id,String order_status);
+    int findCountAllByUser(int user_id);
+    List<Order> getOrderBookListByStatus(String order_status, int user_id, int page,int pageSize);
 }

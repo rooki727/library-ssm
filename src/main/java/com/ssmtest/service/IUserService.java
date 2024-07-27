@@ -36,6 +36,7 @@ public interface IUserService {
     void deleteUser(int id);
 
     void updateUser(User user);
+    void updateUserAvatar(User user);
 
     User selectByAccountUser(int account);
 

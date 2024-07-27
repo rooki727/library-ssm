@@ -95,4 +95,16 @@ public class OrderServiceImpl implements OrderService {
     public int findCountStatus(int user_id,String order_status) {
         return orderDao.findCountStatus(user_id,order_status);
     }
+
+    @Override
+    public int findCountAllByUser(int user_id) {
+        return orderDao.findCountAllByUser(user_id);
+    }
+
+    @Override
+    public List<Order> getOrderBookListByStatus(String order_status, int user_id, int page, int pageSize) {
+        // 在这里可以调用DAO层方法，访问数据库
+        int offset = (page - 1) * pageSize;
+        return orderDao.getOrderBookListByStatus(order_status,user_id,offset,pageSize);
+    }
 }

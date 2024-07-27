@@ -23,16 +23,16 @@
     <!-- 更新book信息 -->
     <update id="updateBook" parameterType="com.ssmtest.entity.Book">
         UPDATE booklist SET book_name = #{book_name}, author = #{author}, category = #{category},
-                            price = #{price},stock= #{stock},sale_number= #{sale_number},
+                            price = #{price},stock= #{stock},sale_number= #{sale_number},press=#{press},
                             picture = #{picture},main_picture = #{main_picture},introduce = #{introduce}
         WHERE book_id = #{book_id}
     </update>
 
     <!-- 添加book -->
     <insert id="addBook" parameterType="com.ssmtest.entity.Book">
-        INSERT INTO booklist (book_name,author,category,price,buildTime,picture,main_picture,introduce,stock)
+        INSERT INTO booklist (book_name,author,category,price,buildTime,picture,main_picture,introduce,stock,press)
         VALUES(#{book_name}, #{author}, #{category}, #{price}, #{buildTime},
-               #{picture},#{main_picture},#{introduce},#{stock})
+               #{picture},#{main_picture},#{introduce},#{stock},#{press})
     </insert>
     <!-- 删除book -->
     <delete id="deleteBook" parameterType="com.ssmtest.entity.Book">

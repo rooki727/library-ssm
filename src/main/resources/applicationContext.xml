@@ -47,6 +47,11 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"></property>
     </bean>
+    <!-- 在XML配置文件中配置MultipartResolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 可以根据需要进行配置 -->
+        <property name="maxUploadSize" value="5242880" /> <!-- 最大上传文件大小，单位为字节，这里设置为5MB -->
+    </bean>
     <!-- 配置 ObjectMapper Bean -->
     <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
         <!-- 你可以在这里设置 ObjectMapper 的各种属性 -->

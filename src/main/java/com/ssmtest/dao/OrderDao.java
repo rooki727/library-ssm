@@ -1,10 +1,7 @@
 package com.ssmtest.dao;
 
 
-import com.ssmtest.entity.Logistics;
-import com.ssmtest.entity.Order;
-import com.ssmtest.entity.OrderBook;
-import com.ssmtest.entity.OrderDetail;
+import com.ssmtest.entity.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -30,4 +27,7 @@ public interface OrderDao {
     void addNewLogistics(Logistics logistics);
     List<Logistics> findLogisticsList(int order_id);
     int findCountStatus(@Param("user_id") int user_id,@Param("order_status") String order_status);
+    int findCountAllByUser(@Param("user_id") int user_id);
+//    进行订单列表
+    List<Order> getOrderBookListByStatus(@Param("order_status") String order_status, @Param("user_id") int user_id,@Param("offset") int offset, @Param("pageSize") int pageSize);
 }

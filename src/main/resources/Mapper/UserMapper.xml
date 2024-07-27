@@ -68,12 +68,12 @@
         <set>
             <if test="birthday!=null and address!=null">
                 name = #{name}, phone = #{phone}, email = #{email},
-                gender=#{gender},birthday = #{birthday},address = #{address}
+                gender=#{gender},birthday = #{birthday},address = #{address},awatar = #{awatar}
             </if>
             <if test="birthday==null and address==null">
                 -- 执行其他语句
                 name = #{name}, phone = #{phone}, email = #{email},verify = #{verify},
-                account = #{account},gender=#{gender},password = #{password}
+                account = #{account},gender=#{gender},password = #{password},awatar = #{awatar}
             </if>
         </set>
 

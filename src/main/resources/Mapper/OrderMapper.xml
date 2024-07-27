@@ -88,4 +88,29 @@
     <select id="findCountStatus" resultType="java.lang.Integer">
         SELECT COUNT(*) FROM orderlist WHERE user_id = #{user_id} AND order_status=#{order_status}
     </select>
+    <select id="findCountAllByUser" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM orderlist WHERE user_id = #{user_id}
+    </select>
+    <!--根据用户和订单状态获取orderlist列表-->
+    <select id="getOrderBookListByStatus" resultType="com.ssmtest.entity.Order">
+        <!-- 使用动态 SQL 标签 -->
+        <choose>
+            <!-- 当 order_status 不为空时执行此查询 -->
+            <when test="order_status != null and order_status != '全部'">
+                SELECT *
+                FROM orderlist
+                WHERE order_status = #{order_status} AND user_id = #{user_id}
+                ORDER BY order_id DESC
+                LIMIT #{pageSize} OFFSET #{offset}
+            </when>
+            <!-- 当 order_status 为空时执行此查询 -->
+            <otherwise>
+                SELECT *
+                FROM orderlist
+                WHERE user_id = #{user_id}
+                ORDER BY order_id DESC
+                LIMIT #{pageSize} OFFSET #{offset}
+            </otherwise>
+        </choose>
+    </select>
 </mapper>

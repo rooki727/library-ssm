@@ -100,6 +100,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public void updateUserAvatar(User user) {
+        userDao.updateUserAvatar(user);
+    }
+
+    @Override
     public User selectUserCommonByNameAndPassword(User user) {
         return userDao.selectUserCommonByNameAndPassword(user);
     }

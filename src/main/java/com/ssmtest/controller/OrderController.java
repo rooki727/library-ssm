@@ -220,6 +220,9 @@ public class OrderController{
         int user_id = (int) requestBody.get("user_id");
         System.out.println(user_id);
         try {
+            int all=orderService.findCountAllByUser(user_id);
+
+            OrderStatus orderStatus0=new OrderStatus("全部",all);
             int daiFuKuan=orderService.findCountStatus(user_id,"待付款");
             OrderStatus orderStatus=new OrderStatus("待付款",daiFuKuan);
             int daiFaHuo=orderService.findCountStatus(user_id,"待发货");
@@ -231,6 +234,7 @@ public class OrderController{
             int yiTuiKuan=orderService.findCountStatus(user_id,"已退款");
             OrderStatus orderStatus5=new OrderStatus("退款/售后",yiTuiKuan);
             List<OrderStatus> orderStatusList=new ArrayList<>();
+            orderStatusList.add(orderStatus0);
             orderStatusList.add(orderStatus);
             orderStatusList.add(orderStatus2);
             orderStatusList.add(orderStatus3);
@@ -240,6 +244,34 @@ public class OrderController{
             response.setCode("1");
             response.setMsg("查询订单状态数量成功");
             response.setResult(orderStatusList);
+            return response;
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @PostMapping("/getOrderBookListByStatus")
+    @ResponseBody
+    public ApiResponse<List<OrderBook>> findLogisticsList(@RequestParam("order_status") String order_status,
+                                                          @RequestParam("user_id") int user_id,
+                                                          @RequestParam("page") int page,
+                                                          @RequestParam("pageSize") int pageSize
+    ){
+        ApiResponse<List<OrderBook>> response=new ApiResponse<>();
+        try {
+            List<OrderBook> orderBookList=new ArrayList<>();
+            List<Order> orderList=orderService.getOrderBookListByStatus(order_status,user_id,page,pageSize);
+
+            for(int i = 0; i < orderList.size(); i++){
+                Order order = orderList.get(i);
+                List<OrderDetail> orderDetailList=orderService.getOrderDetailsWithBooks(order.getOrder_id());
+                OrderBook orderBook =new OrderBook();
+                orderBook.setOrderDetailList(orderDetailList);
+                orderBook.setOrder(order);
+                orderBookList.add(orderBook);
+            }
+            response.setCode("1");
+            response.setMsg("查询订单列表");
+            response.setResult(orderBookList);
             return response;
         }catch (Exception e) {
             throw new RuntimeException(e);
