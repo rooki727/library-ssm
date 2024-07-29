@@ -13,9 +13,9 @@
     <!-- 配置C3P0的连接池对象 -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql:///library_ssm"/>
-        <property name="user" value="root"/>
-        <property name="password" value="k20020727"/>
+        <property name="jdbcUrl" value="jdbc:mysql://175.178.187.126:3306/library_ssm"/>
+        <property name="user" value="library_ssm"/>
+        <property name="password" value="Lk20020727."/>
     </bean>
     <!-- 配置SqlSession的工厂 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
@@ -56,7 +56,6 @@
     <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
         <!-- 你可以在这里设置 ObjectMapper 的各种属性 -->
     </bean>
-
     <!-- 配置事务的通知 -->
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
         <tx:attributes>
