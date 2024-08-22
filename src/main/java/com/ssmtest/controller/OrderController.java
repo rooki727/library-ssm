@@ -43,7 +43,13 @@ public class OrderController{
     @ResponseBody
     public String updateOrder(@RequestBody Order order){
         try {
+
             orderService.updateOrder(order);
+            if(order.getOrder_status().equals("待发货")){
+                Date date=new Date();
+                Logistics logistics=new Logistics(order.getOrder_id(),"您的包裹已打印订单，等待发货","rooki","12345678","13571231412",date);
+                orderService.addNewLogistics(logistics);
+            }
             return "success update！";
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -169,7 +175,6 @@ public class OrderController{
             orderService.updateOrder(order);
             Date date=new Date();
             Logistics logistics=new Logistics(order.getOrder_id(),"您的包裹已经在广州番薯区完成收件","rooki","12345678","13571231412",date);
-            System.out.println(logistics);
             orderService.addNewLogistics(logistics);
             response.setCode("1");
             response.setMsg("订单模拟发货成功");
@@ -186,7 +191,7 @@ public class OrderController{
         try {
             orderService.updateOrder(order);
             Date date=new Date();
-            Logistics logistics=new Logistics(order.getOrder_id(),"您的包裹已经在信宜番薯区签收成功","rooki","12345678","13571231412",date);
+            Logistics logistics=new Logistics(order.getOrder_id(),"您的包裹已签收成功","rooki","12345678","13571231412",date);
             System.out.println(logistics);
             orderService.addNewLogistics(logistics);
             response.setCode("1");

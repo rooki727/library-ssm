@@ -134,57 +134,6 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
         }
 
     }
-
-    //增
-    @PostMapping("/addAdmin")
-    @ResponseBody
-    public ApiResponse<Boolean> addAdmin(@RequestBody Admin admin) {
-        ApiResponse<Boolean> response = new ApiResponse<>();
-        try {
-            userService.addAdmin(admin);
-            response.setCode("1");
-            response.setMsg("操作成功");
-            response.setResult(true);
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    //删
-    @PostMapping("/deleteAdmin")
-    @ResponseBody
-    public ApiResponse<Boolean> deleteAdmin(@RequestBody Map<String, Object> requestBody) {
-        ApiResponse<Boolean> response = new ApiResponse<>();
-        // 从请求体中获取 userId
-        int id = (int) requestBody.get("id");
-        try {
-            userService.deleteAdmin(id);
-            response.setCode("1");
-            response.setMsg("操作成功");
-            response.setResult(true);
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-//    重置token
-@PostMapping("/resetAdminToken")
-@ResponseBody
-public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
-    ApiResponse<String> response = new ApiResponse<>();
-    try {
-        userService.updateAdminToken(admin);
-        response.setCode("1");
-        response.setMsg("操作成功");
-        response.setResult("重置token成功！");
-        return response;
-    } catch (Exception e) {
-        throw new RuntimeException(e);
-    }
-}
-
     @PostMapping("/updateAdmin")
     @ResponseBody
     public ApiResponse<Boolean> updateAdmin(@RequestBody Admin admin ,HttpServletRequest request ) {
@@ -213,6 +162,114 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
         }
         return response;
     }
+    //    封装一个判断权限的函数
+    public Boolean checkVerify(int login_id,String adminVerify){
+        Admin adminLoginer=userService.getLoginById(login_id);
+        if("first".equals(adminLoginer.getVerify()) && "second".equals(adminVerify)){
+//
+            System.out.println("权限校验通过！");
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    //增
+    @PostMapping("/addAdmin")
+    @ResponseBody
+    public ApiResponse<Boolean> addAdmin(@RequestBody AdminRequest adminRequest) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        Admin adminLoginer=userService.getLoginById(adminRequest.getLogin_id());
+
+        if("first".equals(adminLoginer.getVerify())){
+            try {
+                userService.addAdmin(adminRequest.getAdmin());
+                response.setCode("1");
+                response.setMsg("操作成功");
+                response.setResult(true);
+                return response;
+            }catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            response.setCode("-2");
+            response.setMsg("权限不够");
+            response.setResult(false);
+            return response;
+        }
+
+
+    }
+
+    //删
+    @PostMapping("/deleteAdmin")
+    @ResponseBody
+    public ApiResponse<Boolean> deleteAdmin(@RequestBody AdminRequest adminRequest) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        if(checkVerify(adminRequest.getLogin_id(),adminRequest.getAdmin().getVerify())){
+            try {
+                userService.deleteAdmin(adminRequest.getAdmin().getId());
+                response.setCode("1");
+                response.setMsg("操作成功");
+                response.setResult(true);
+                return response;
+            }catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        else {
+            response.setCode("-2");
+            response.setMsg("权限不够");
+            response.setResult(false);
+            return response;
+        }
+
+    }
+
+//修改admin列表的admin信息
+    @PostMapping("/updateAdminById")
+    @ResponseBody
+    public ApiResponse<Boolean> updateAdminById(@RequestBody AdminRequest adminRequest) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+
+        if(checkVerify(adminRequest.getLogin_id(),adminRequest.getAdmin().getVerify())){
+            try {
+                userService.updateAdmin(adminRequest.getAdmin());
+                response.setCode("1");
+                response.setMsg("操作成功");
+                response.setResult(true);
+                return response;
+            }catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+       else {
+            response.setCode("-2");
+            response.setMsg("权限不够");
+            response.setResult(false);
+            return response;
+        }
+    }
+//    重置token
+@PostMapping("/resetAdminToken")
+@ResponseBody
+public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
+    ApiResponse<String> response = new ApiResponse<>();
+    try {
+        userService.updateAdminToken(admin);
+        response.setCode("1");
+        response.setMsg("操作成功");
+        response.setResult("重置token成功！");
+        return response;
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+}
+
+
     private static final String UPLOAD_DIR = "E:\\library-ssm\\uploads";
     @PostMapping("/uploadAvatar")
     @ResponseBody

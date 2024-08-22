@@ -53,14 +53,15 @@ public class BookController {
             @RequestParam("pageSize") int pageSize) {
         ApiResponse<GuessLikeResponse> response = new ApiResponse<>();
         try {
-            response.setCode("1");
-            response.setMsg("操作成功");
+
             List<Book> bookList=bookService.getGuessLikeBooks(page, pageSize);
             int totalPages = bookService.getTotalPages(pageSize);
             // 构建响应对象
             GuessLikeResponse guessLikeResponse = new GuessLikeResponse();
             guessLikeResponse.setBookList(bookList);
             guessLikeResponse.setTotalPages(totalPages);
+            response.setCode("1");
+            response.setMsg("操作成功");
             response.setResult(guessLikeResponse);
             return response;
         }catch (Exception e){

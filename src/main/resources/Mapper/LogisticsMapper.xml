@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssmtest.dao.LogisticsDao">
+
+    <!-- 查询所有findAllLogistics -->
+    <select id="findAllLogistics" resultType="com.ssmtest.entity.Logistics">
+        SELECT * FROM logistics
+        ORDER BY order_id ASC, logistics_id ASC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+    <select id="getTotalPageLogistics" resultType="int">
+        SELECT COUNT(*) FROM logistics
+    </select>
+    <!--    找到所有物流信息列表-->
+    <select id="findLogisticsById" resultType="com.ssmtest.entity.Logistics">
+        SELECT * FROM logistics WHERE order_id = #{order_id}
+    </select>
+
+    <!-- 删除物流 -->
+    <delete id="deleteLogistics" parameterType="com.ssmtest.entity.Logistics">
+        DELETE FROM logistics WHERE logistics_id = #{logistics_id}
+    </delete>
+
+    <!-- 添加物流 -->
+    <insert id="addLogistics" parameterType="com.ssmtest.entity.Logistics">
+        INSERT INTO logistics (order_id,company_name,company_tel,logistics_number,text,time)
+        VALUES(#{order_id}, #{company_name}, #{company_tel}, #{logistics_number}, #{text},
+               #{time})
+    </insert>
+</mapper>
