@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssmtest.dao.ChatDao">
+    <insert id="insertMessage" parameterType="com.ssmtest.entity.ChatMessage">
+        INSERT INTO chatmessage (user_id, admin_id, message, sendTime)
+        VALUES (#{user_id}, #{admin_id}, #{message}, #{sendTime})
+    </insert>
+
+    <select id="getMessagesByUserId" resultType="com.ssmtest.entity.ChatMessage">
+        SELECT * FROM chatmessage
+        WHERE user_id = #{user_id}
+    </select>
+
+</mapper>

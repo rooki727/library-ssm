@@ -13,7 +13,7 @@
     <!-- 配置C3P0的连接池对象 -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://175.178.187.126:3306/library_ssm"/>
+        <property name="jdbcUrl" value="jdbc:mysql://119.29.168.176:3306/library_ssm"/>
         <property name="user" value="library_ssm"/>
         <property name="password" value="Lk20020727."/>
     </bean>
@@ -32,6 +32,7 @@
                 <value>classpath:Mapper/CartMapper.xml</value>
                 <value>classpath:Mapper/CollectionMapper.xml</value>
                 <value>classpath:Mapper/LogisticsMapper.xml</value>
+                <value>classpath:Mapper/ChatMapper.xml</value>
             </list>
         </property>
         <!--实体列别名-->
@@ -74,6 +75,10 @@
     </aop:config>
     <!--事务注解驱动-->
     <tx:annotation-driven transaction-manager="transactionManager"></tx:annotation-driven>
+
+    <!-- WebSocket Bean Configuration -->
+    <bean id="webSocketHandler"
+          class="com.ssmtest.webSocket.ChatWebSocketHandler " />
 
 
 </beans>

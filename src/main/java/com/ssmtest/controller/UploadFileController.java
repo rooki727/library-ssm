@@ -23,14 +23,14 @@ public class UploadFileController {
 
 //    @Value("${file.upload-dir}")
 //    private String uploadDir;
-    private static final String UPLOAD_DIR = "E:\\library-ssm\\uploads";
+
     private final ServletContext servletContext;
 
     public UploadFileController(ServletContext servletContext) {
         this.servletContext = servletContext;
     }
 
-    @PostMapping("/uploadBookMainPicture")
+    @PostMapping("/uploadPicture")
     @ResponseBody
     public ApiResponse<String> uploadAvatar(@RequestParam("image") MultipartFile file, HttpServletRequest request) {
         ApiResponse<String> response = new ApiResponse<>();
@@ -43,11 +43,13 @@ public class UploadFileController {
         try {
             // Generate unique file name
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-
+             //设置图片上传路径
+            // 获取名为static的文件夹的路径
+            String Local_url = request.getSession().getServletContext().getRealPath("/static");
+ 
             // Resolve the full file path
-            String filePath = UPLOAD_DIR + File.separator + fileName;
+            String filePath = Local_url + File.separator + fileName;
             Path destPath = Paths.get(filePath);
-
             // Create directories if they don't exist
             Files.createDirectories(destPath.getParent());
 
@@ -56,7 +58,7 @@ public class UploadFileController {
 
             // Construct full URL path
             String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/uploads/")
+                    .path("/static/")
                     .path(fileName)
                     .toUriString();
 

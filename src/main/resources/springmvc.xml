@@ -17,5 +17,7 @@
 
     <!-- 开启对SpringMVC注解的支持 -->
     <mvc:annotation-driven/>
+    <!-- 配置静态资源处理 -->
+    <mvc:resources mapping="/static/**" location="/static/" />
 
 </beans>

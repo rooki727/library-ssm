@@ -12,7 +12,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <!--统一的版本管理-->
-    <spring.version>5.2.7.RELEASE</spring.version>
+    <spring.version>5.3.20</spring.version>
     <slf4j.version>1.7.6</slf4j.version>
     <log4j.version>1.2.12</log4j.version>
     <mysql.version>5.1.49</mysql.version>
@@ -61,6 +61,24 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
       <version>${spring.version}</version>
+    </dependency>
+
+    <!-- Spring WebSocket -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-websocket</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <!-- STOMP over WebSocket -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-messaging</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.3.1</version>
     </dependency>
 
     <!--Junit-->
@@ -200,6 +218,8 @@
       <artifactId>commons-io</artifactId>
       <version>2.11.0</version>
     </dependency>
+
+
 
 
   </dependencies>
