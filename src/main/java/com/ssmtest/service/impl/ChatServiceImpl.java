@@ -21,4 +21,9 @@ public class ChatServiceImpl implements ChatService {
     public List<ChatMessage> getMessagesByUserId(int userId) {
         return chatDao.getMessagesByUserId(userId);
     }
+
+    @Override
+    public List<Integer> getUniqueUserIds() {
+        return chatDao.getUniqueUserIds();
+    }
 }

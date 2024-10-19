@@ -8,4 +8,5 @@ public interface ChatService {
     void insertMessage(ChatMessage chatMessage);
 
     List<ChatMessage> getMessagesByUserId(int userId);
+    List<Integer> getUniqueUserIds();
 }

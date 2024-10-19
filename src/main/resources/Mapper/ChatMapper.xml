@@ -14,4 +14,7 @@
         WHERE user_id = #{user_id}
     </select>
 
+    <select id="getUniqueUserIds" resultType="java.lang.Integer">
+        SELECT DISTINCT user_id FROM chatmessage
+    </select>
 </mapper>

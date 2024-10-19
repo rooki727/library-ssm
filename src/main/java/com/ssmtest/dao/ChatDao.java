@@ -10,4 +10,6 @@ public interface ChatDao {
     void insertMessage(ChatMessage chatMessage);
 
     List<ChatMessage> getMessagesByUserId(int userId);
+
+    List<Integer> getUniqueUserIds();
 }
