@@ -22,7 +22,7 @@ public interface IUserDao {
 
     void updatePassword(Admin admin);
     void updateAdminToken(Admin admin);
-
+    void updateAdminRefreshToken(Admin admin);
 //    普通用户部分
     List<User> findAllUser();
 
@@ -34,7 +34,7 @@ public interface IUserDao {
     void updateUserAvatar(User user);
     User selectUserCommonByNameAndPassword(User user);
     void updateCommonToken(User user);
-
+    void updateCommonRefreshToken(User user);
     User getLoginCommonById(int id);
 
 

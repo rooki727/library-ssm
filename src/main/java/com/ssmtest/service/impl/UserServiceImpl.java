@@ -70,6 +70,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public void updateAdminRefreshToken(Admin admin) {
+        userDao.updateAdminRefreshToken(admin);
+    }
+
+    @Override
     public boolean isAdminToken(String reqToken, String sqlToken) {
         if(reqToken.equals(sqlToken)){
             return true;
@@ -112,6 +117,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void updateCommonToken(User user) {
         userDao.updateCommonToken(user);
+    }
+
+    @Override
+    public void updateCommonRefreshToken(User user) {
+        userDao.updateCommonRefreshToken(user);
     }
 
     @Override

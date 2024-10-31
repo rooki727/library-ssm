@@ -25,7 +25,7 @@ public interface IUserService {
     void updatePassword(Admin admin);
 
     void updateAdminToken(Admin admin);
-
+    void updateAdminRefreshToken(Admin admin);
     boolean isAdminToken(String reqToken, String sqlToken);
     Admin selectByAccount(int account);
     //    普通用户部分
@@ -46,6 +46,7 @@ public interface IUserService {
     int selectUserMonth();
     int selectUserBuy();
     void updateCommonToken(User user);
+    void updateCommonRefreshToken(User user);
     User getLoginCommonById(int id);
     boolean isCommonToken(String reqToken, String sqlToken);
 

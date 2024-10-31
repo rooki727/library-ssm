@@ -28,7 +28,11 @@
             token = #{token}
         WHERE id = #{id}
     </update>
-
+    <update id="updateAdminRefreshToken" parameterType="com.ssmtest.entity.Admin">
+        UPDATE admin SET
+            refreshToken = #{refreshToken}
+        WHERE id = #{id}
+    </update>
     <!-- 更新loginer信息 -->
     <update id="updateAdmin" parameterType="com.ssmtest.entity.Admin">
         UPDATE admin
@@ -97,6 +101,11 @@
     <update id="updateCommonToken" parameterType="com.ssmtest.entity.User">
         UPDATE commonuser SET
             token = #{token}
+        WHERE user_id = #{user_id}
+    </update>
+    <update id="updateCommonRefreshToken" parameterType="com.ssmtest.entity.User">
+        UPDATE commonuser SET
+            refreshToken = #{refreshToken}
         WHERE user_id = #{user_id}
     </update>
 <!--    用户日月情况-->

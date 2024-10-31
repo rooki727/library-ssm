@@ -15,6 +15,7 @@ public class User implements Serializable {
     private String gender;
     private String phone;
     private String token;
+    private String refreshToken;
     private String email;
     private String awatar;
     private String verify;

@@ -81,7 +81,6 @@ public void afterConnectionEstablished(WebSocketSession session) throws Exceptio
     }
 }
 
-
     // 广播发送消息给所有用户
     public void sendMessageToAllUsers(TextMessage message) {
         for (WebSocketSession session : userSocketSessionMap.values()) {
@@ -155,6 +154,5 @@ public void afterConnectionEstablished(WebSocketSession session) throws Exceptio
         return false;
     }
 
-    //发送信息的实现
 
 }

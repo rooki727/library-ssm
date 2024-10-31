@@ -18,6 +18,7 @@ public class Admin implements Serializable {
     private String email;
     private String verify;
     private String token;
+    private String refreshToken;
     private Date buildTime;
 
 }

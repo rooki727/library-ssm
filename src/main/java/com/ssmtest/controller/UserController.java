@@ -1,6 +1,7 @@
 package com.ssmtest.controller;
 
 import com.ssmtest.entity.*;
+import com.ssmtest.jwt.JwtConfig;
 import com.ssmtest.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -8,15 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @CrossOrigin
@@ -27,6 +22,8 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+    JwtConfig jwtConfig=new JwtConfig();
+
     //登录
 
     @PostMapping("/login")
@@ -36,48 +33,20 @@ public class UserController {
         Admin adminFromDb = userService.selectUserByNameAndPassword(admin);
         String password = admin.getPassword();
         if (adminFromDb != null && adminFromDb.getPassword().equals(password)) {
-            // 登录成功，生成token
-            String token = generateToken(adminFromDb);
+            // 登录成功，生成token和refreshToken
+            String token =jwtConfig.createToken(adminFromDb.getId().toString());
+            String refreshToken=jwtConfig.createRefreshToken(adminFromDb.getId().toString());
             // 将token放入响应头中
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             adminFromDb.setToken(token);
+            adminFromDb.setRefreshToken(refreshToken);
+            userService.updateAdminRefreshToken(adminFromDb);
             userService.updateAdminToken(adminFromDb);
             return new ResponseEntity<>(adminFromDb, headers, HttpStatus.OK);
         } else {
             // 登录失败
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("用户名或密码错误");
-        }
-    }
-
-    // 生成token
-
-    public static String generateToken(Admin admin) {
-        String name= admin.getName();
-        String timestamp = java.lang.String.valueOf(System.currentTimeMillis());
-        String data = name + timestamp;
-
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(data.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    public static String generateTokenUser(User user) {
-        String name= user.getName();
-        String timestamp = java.lang.String.valueOf(System.currentTimeMillis());
-        String data = name + timestamp;
-
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hash = md.digest(data.getBytes());
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
@@ -94,23 +63,12 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
         // 获取实际的Token值
         String token = tokenAuthorization.substring(7);
         Admin oldAdmin=userService.getLoginById(id);// 7是 "Bearer " 的长度
-        System.out.println(token);
-        System.out.println(oldAdmin.getToken());
-        System.out.println(id);
         boolean isToken=  userService.isAdminToken(token,oldAdmin.getToken());
-        System.out.println(isToken);
-
       if(isToken){
           System.out.println("token校验成功！getLoginById");
           //    处理业务
           Admin newAdmin=userService.getLoginById(id);
-          String newToken = generateToken(newAdmin);
-          // 将token放入响应头中
-          HttpHeaders headers = new HttpHeaders();
-          headers.add("Authorization", "Bearer " + newToken);
-          newAdmin.setToken(newToken);
-          userService.updateAdminToken(newAdmin);
-          return new ResponseEntity<>(newAdmin, headers, HttpStatus.OK);
+          return new ResponseEntity<>(newAdmin, HttpStatus.OK);
       }
     }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
@@ -147,17 +105,37 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
             Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
             boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
             if (isToken) {
-                System.out.println("token校验成功！updateAdmin");
-                //    处理业务
-                try {
-                    userService.updateAdmin(admin);
-                    response.setCode("1");
-                    response.setMsg("操作成功");
-                    response.setResult(true);
+                boolean isValid = jwtConfig.validateToken(token, admin.getId().toString());
+                if(!isValid){
+//                    token失效标准code-403
+                    response.setCode("-403");
+                    response.setMsg("token失效");
+                    response.setResult(false);
                     return response;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
+                // 继续处理有效token的逻辑
+                else {
+                    System.out.println("token校验成功！updateAdmin");
+                    //    处理业务
+                    try {
+                        userService.updateAdmin(admin);
+                        response.setCode("1");
+                        response.setMsg("操作成功");
+                        response.setResult(true);
+                        return response;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+//            处理token变化情况
+            else{
+                //                    token失效标准code-403
+                response.setCode("-403");
+                response.setMsg("token失效");
+                response.setResult(false);
+                return response;
             }
         }
         return response;
@@ -260,6 +238,7 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
     ApiResponse<String> response = new ApiResponse<>();
     try {
         userService.updateAdminToken(admin);
+        userService.updateAdminRefreshToken(admin);
         response.setCode("1");
         response.setMsg("操作成功");
         response.setResult("重置token成功！");
@@ -283,17 +262,35 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
             Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
             boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
             if (isToken) {
-                System.out.println("token校验成功！updatePassword");
-                //    处理业务
-                try {
-                    userService.uploadAvatar(admin);
-                    response.setCode("1");
-                    response.setMsg("操作成功");
-                    response.setResult(true);
+                boolean isValid = jwtConfig.validateToken(token, admin.getId().toString());
+                if(!isValid){
+                    response.setCode("-403");
+                    response.setMsg("token失效");
+                    response.setResult(false);
                     return response;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
+                else{
+                    System.out.println("token校验成功！updatePassword");
+                    //    处理业务
+                    try {
+                        userService.uploadAvatar(admin);
+                        response.setCode("1");
+                        response.setMsg("操作成功");
+                        response.setResult(true);
+                        return response;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+            //            处理token变化情况
+            else{
+                //                    token失效标准code-403
+                response.setCode("-403");
+                response.setMsg("token失效");
+                response.setResult(false);
+                return response;
             }
         }
 
@@ -313,17 +310,35 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
             Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
             boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
             if (isToken) {
-                System.out.println("token校验成功！updatePassword");
-                //    处理业务
-                try {
-                    userService.updatePassword(admin);
-                    response.setCode("1");
-                    response.setMsg("操作成功");
-                    response.setResult(true);
+                boolean isValid = jwtConfig.validateToken(token, admin.getId().toString());
+                if(!isValid){
+                    response.setCode("-403");
+                    response.setMsg("token失效");
+                    response.setResult(false);
                     return response;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
                 }
+                else{
+                    System.out.println("token校验成功！updatePassword");
+                    //    处理业务
+                    try {
+                        userService.updatePassword(admin);
+                        response.setCode("1");
+                        response.setMsg("操作成功");
+                        response.setResult(true);
+                        return response;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+            //            处理token变化情况
+            else{
+                //                    token失效标准code-403
+                response.setCode("-403");
+                response.setMsg("token失效");
+                response.setResult(false);
+                return response;
             }
         }
 
@@ -401,22 +416,38 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
             User oldUser=userService.getLoginCommonById(user.getUser_id());// 7是 "Bearer " 的长度
             boolean isToken=  userService.isCommonToken(token,oldUser.getToken());
             if (isToken) {
-                System.out.println("token校验成功！updateUser");
-                //    处理业务
-                try {
-                    userService.updateUser(user);
-                    response.setCode("1");
-                    response.setMsg("操作成功");
-                    response.setResult(true);
+                boolean isValid = jwtConfig.validateToken(token, user.getUser_id().toString());
+                if(!isValid){
+                    response.setCode("-403");
+                    response.setMsg("token失效");
+                    response.setResult(false);
                     return response;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
+                }
+
+                else{
+                    System.out.println("token校验成功！updateUser");
+
+                    //    处理业务
+                    try {
+                        userService.updateUser(user);
+                        response.setCode("1");
+                        response.setMsg("操作成功");
+                        response.setResult(true);
+                        return response;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
+//                    token失效标准code-403
+            else{
+                response.setCode("-403");
+                response.setMsg("token失效");
+                response.setResult(false);
+                return response;
+            }
         }
-        
-            return null;
-
+            return response;
 
     }
     @PostMapping("/loginUser")
@@ -427,12 +458,15 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
         String password = user.getPassword();
         if (user1 != null && user1.getPassword().equals(password)) {
             // 登录成功，生成token
-            String token = generateTokenUser(user1);
+            String token = jwtConfig.createToken(user1.getUser_id().toString());
+            String refreshToken= jwtConfig.createToken(user1.getUser_id().toString());
             // 将token放入响应头中
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", "Bearer " + token);
             user1.setToken(token);
+            user1.setRefreshToken(refreshToken);
             userService.updateCommonToken(user1);
+            userService.updateCommonRefreshToken(user1);
             User newUser=userService.selectUserCommonByNameAndPassword(user);
             return new ResponseEntity<>(newUser, headers, HttpStatus.OK);
         } else {
@@ -446,6 +480,7 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
         ApiResponse<String> response = new ApiResponse<>();
         try {
             userService.updateCommonToken(user);
+            userService.updateCommonRefreshToken(user);
             response.setCode("1");
             response.setMsg("操作成功");
             response.setResult("重置token成功！");
@@ -474,14 +509,10 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
                 System.out.println("token校验成功！getLoginCommonById");
                 //    处理业务
                 User newUser=userService.getLoginCommonById(id);
-//                String newToken = generateTokenUser(newUser);
-//                // 将token放入响应头中
-//                HttpHeaders headers = new HttpHeaders();
-//                headers.add("Authorization", "Bearer " + newToken);
-//                newUser.setToken(newToken);
-//                userService.updateCommonToken(newUser);
-//                return new ResponseEntity<>(newUser, headers, HttpStatus.OK);
                 return new ResponseEntity<>(newUser, HttpStatus.OK);
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
             }
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
@@ -564,5 +595,34 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
     }
 
 
+//token无感刷新 admin
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(@RequestBody Admin admin) {
+        Admin admin1=userService.getLoginById(admin.getId());
+        if (admin1.getRefreshToken().equals(admin.getRefreshToken())) {
+            String newAccessToken = jwtConfig.createToken(admin.getId().toString());
+            admin1.setToken(newAccessToken);
+            userService.updateAdminToken(admin1);
+            return ResponseEntity.ok(admin1);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Refresh Token 已失效");
+        }
+    }
+
+    //token无感刷新 user
+    @PostMapping("/refreshTokenUser")
+    public ResponseEntity<?> refreshTokenUser(@RequestBody User user) {
+        User user1=userService.getLoginCommonById(user.getUser_id());
+        if (user1.getRefreshToken().equals(user.getRefreshToken())) {
+            String newAccessToken = jwtConfig.createToken(user.getUser_id().toString());
+            user1.setToken(newAccessToken);
+            userService.updateCommonToken(user1);
+            return ResponseEntity.ok(user1);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Refresh Token 已失效");
+        }
+    }
 }
 
