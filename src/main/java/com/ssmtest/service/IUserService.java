@@ -30,7 +30,7 @@ public interface IUserService {
     Admin selectByAccount(int account);
     //    普通用户部分
     List<User> findAllUser();
-
+    List<Integer> getAllUserId();
     void addUser(User user);
 
     void deleteUser(int id);

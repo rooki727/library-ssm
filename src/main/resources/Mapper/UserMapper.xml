@@ -66,6 +66,9 @@
     <select id="findAllUser" resultType="com.ssmtest.entity.User">
         SELECT * FROM commonuser
     </select>
+    <select id="getAllUserId" resultType="Integer">
+        SELECT user_id FROM commonuser
+    </select>
     <!-- 更新User信息 -->
     <update id="updateUser" parameterType="com.ssmtest.entity.User">
         UPDATE commonuser

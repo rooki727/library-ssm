@@ -33,6 +33,7 @@
                 <value>classpath:Mapper/CollectionMapper.xml</value>
                 <value>classpath:Mapper/LogisticsMapper.xml</value>
                 <value>classpath:Mapper/ChatMapper.xml</value>
+                <value>classpath:Mapper/UserBookMapper.xml</value>
             </list>
         </property>
         <!--实体列别名-->

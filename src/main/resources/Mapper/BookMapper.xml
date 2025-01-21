@@ -84,6 +84,11 @@
         WHERE category = #{category}
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
+    <select id="getAllBookByCategory" resultType="com.ssmtest.entity.Book">
+        SELECT *
+        FROM booklist
+        WHERE category = #{category}
+    </select>
 <!--    根据书名进行模糊查询-->
     <select id="fuzzyQueriesBookName" resultType="com.ssmtest.entity.Book">
         SELECT * FROM booklist

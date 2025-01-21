@@ -90,6 +90,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public List<Integer> getAllUserId() {
+        return userDao.getAllUserId();
+    }
+
+    @Override
     public void addUser(User user) {
          userDao.addUser(user);
     }

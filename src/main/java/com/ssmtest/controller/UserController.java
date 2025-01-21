@@ -43,6 +43,7 @@ public class UserController {
             adminFromDb.setRefreshToken(refreshToken);
             userService.updateAdminRefreshToken(adminFromDb);
             userService.updateAdminToken(adminFromDb);
+            adminFromDb.setPassword(null);
             return new ResponseEntity<>(adminFromDb, headers, HttpStatus.OK);
         } else {
             // 登录失败
@@ -68,6 +69,7 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
           System.out.println("token校验成功！getLoginById");
           //    处理业务
           Admin newAdmin=userService.getLoginById(id);
+          newAdmin.setPassword(null);
           return new ResponseEntity<>(newAdmin, HttpStatus.OK);
       }
     }
@@ -91,6 +93,60 @@ public ResponseEntity<?> getLoginById(@RequestBody Map<String, Object> requestBo
             throw new RuntimeException(e);
         }
 
+    }
+    @PostMapping("/checkAdminPass")
+    @ResponseBody
+    public ApiResponse<Boolean> checkAdminPass(@RequestBody Admin admin ,HttpServletRequest request ) {
+        System.out.println(admin);
+        ApiResponse<Boolean> response = new ApiResponse<>();
+        // 获取请求头中的Token
+        String tokenAuthorization = request.getHeader("Authorization");
+        // 判断是否是Bearer Token格式
+        if (tokenAuthorization.startsWith("Bearer ")) {
+            // 获取实际的Token值
+            String token = tokenAuthorization.substring(7);
+            Admin oldAdmin = userService.getLoginById(admin.getId());// 7是 "Bearer " 的长度
+            System.out.println(oldAdmin);
+            boolean isToken = userService.isAdminToken(token, oldAdmin.getToken());
+            if (isToken) {
+                boolean isValid = jwtConfig.validateToken(token, admin.getId().toString());
+                if(!isValid){
+//                    token失效标准code-403
+                    response.setCode("-403");
+                    response.setMsg("token失效");
+                    response.setResult(false);
+                    return response;
+                }
+                // 继续处理有效token的逻辑
+                else {
+                    //    处理业务
+                    try {
+                        if(oldAdmin.getPassword().equals(admin.getPassword())){
+                            response.setResult(true);
+                        }
+                        else{
+                            response.setResult(false);
+                        }
+                        response.setCode("1");
+                        response.setMsg("操作成功");
+
+                        return response;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+            }
+//            处理token变化情况
+            else{
+                //                    token失效标准code-403
+                response.setCode("-403");
+                response.setMsg("token失效");
+                response.setResult(false);
+                return response;
+            }
+        }
+        return response;
     }
     @PostMapping("/updateAdmin")
     @ResponseBody
@@ -403,7 +459,21 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
         }
 
     }
-
+    @PostMapping("/updateUserByAdmin")
+    @ResponseBody
+    public  ApiResponse<Boolean> updateUserByAdmin(@RequestBody User user,HttpServletRequest request) {
+        ApiResponse<Boolean> response = new ApiResponse<>();
+                    //    处理业务
+                    try {
+                        userService.updateUser(user);
+                        response.setCode("1");
+                        response.setMsg("操作成功");
+                        response.setResult(true);
+                        return response;
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+    }
     @PostMapping("/updateUser")
     @ResponseBody
     public  ApiResponse<Boolean> updateUser(@RequestBody User user,HttpServletRequest request) {
@@ -468,6 +538,7 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
             userService.updateCommonToken(user1);
             userService.updateCommonRefreshToken(user1);
             User newUser=userService.selectUserCommonByNameAndPassword(user);
+            newUser.setPassword(null);
             return new ResponseEntity<>(newUser, headers, HttpStatus.OK);
         } else {
             // 登录失败
@@ -509,6 +580,7 @@ public ApiResponse<String>  resetAdminToken(@RequestBody Admin admin){
                 System.out.println("token校验成功！getLoginCommonById");
                 //    处理业务
                 User newUser=userService.getLoginCommonById(id);
+                newUser.setPassword(null);
                 return new ResponseEntity<>(newUser, HttpStatus.OK);
             }
             else {

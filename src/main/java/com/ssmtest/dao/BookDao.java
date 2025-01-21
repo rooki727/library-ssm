@@ -28,6 +28,7 @@ public interface BookDao {
     int selectAllCount();
     Book getCategoryFirstBook(String category);
     List<Book> getBookByCategory(@Param("category") String category,@Param("offset") int offset, @Param("pageSize") int pageSize);
+    List<Book> getAllBookByCategory(@Param("category") String category);
     List<Book> fuzzyQueriesBookName(@Param("book_name") String book_name);
 
     Book getBookById(int book_id);

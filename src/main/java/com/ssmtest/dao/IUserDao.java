@@ -25,7 +25,7 @@ public interface IUserDao {
     void updateAdminRefreshToken(Admin admin);
 //    普通用户部分
     List<User> findAllUser();
-
+    List<Integer> getAllUserId();
     void addUser(User user);
 
     void deleteUser(int id);
