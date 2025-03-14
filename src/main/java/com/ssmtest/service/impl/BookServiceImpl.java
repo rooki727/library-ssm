@@ -113,4 +113,6 @@ public class BookServiceImpl implements BookService {
         int totalCount = bookDao.getTotalPageByCategory(category);
         return (int) Math.ceil((double) totalCount / pageSize);
     }
+
+
 }

@@ -5,6 +5,10 @@ import com.ssmtest.entity.BookCollection;
 import com.ssmtest.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
 @Service("collectionService")
 public class CollectionServiceImpl implements CollectionService {
     @Autowired
@@ -23,4 +27,10 @@ public class CollectionServiceImpl implements CollectionService {
     public void deleteCollection(BookCollection bookCollection) {
        collectionDao.deleteCollection(bookCollection);
     }
+
+    @Override
+    public List<Map<String, Object>> getAllBookCollectCounts() {
+        return collectionDao.getAllBookCollectCounts();
+    }
+
 }

@@ -26,4 +26,5 @@ public interface BookService {
     Book getBookById(int book_id);
     String getGuessNameByCategory(String category);
     int getTotalPageByCategory(int pageSize,String category);
+
 }

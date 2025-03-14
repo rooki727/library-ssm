@@ -17,4 +17,9 @@
     <delete id="deleteCollection" parameterType="com.ssmtest.entity.Book">
         DELETE FROM bookCollection WHERE user_id=#{user_id} AND book_id=#{book_id}
     </delete>
+    <select id="getAllBookCollectCounts" resultType="map">
+        SELECT book_id, COUNT(*) as count
+        FROM bookCollection
+        GROUP BY book_id
+    </select>
 </mapper>

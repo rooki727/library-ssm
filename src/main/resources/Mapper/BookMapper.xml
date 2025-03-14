@@ -107,4 +107,42 @@
     <select id="getTotalPageByCategory" resultType="int">
         SELECT COUNT(*) FROM booklist WHERE category=#{category}
     </select>
+
+    <select id="getAllCategories" resultType="String">
+        SELECT DISTINCT  category FROM booklist
+    </select>
+
+    <select id="getFilterCategoryList" resultType="com.ssmtest.entity.Book">
+        SELECT *
+        FROM booklist
+        WHERE category NOT IN
+        <foreach item="category" collection="categoryList" open="(" close=")" separator=",">
+            #{category}
+        </foreach>
+    </select>
+
+    <select id="getCategoryTotalCollectCounts" resultType="java.util.HashMap">
+        SELECT
+            b.category AS category,
+            COUNT(bc.book_id) AS totalCollect
+        FROM
+            booklist b
+                LEFT JOIN
+            bookCollection bc ON b.book_id = bc.book_id
+        GROUP BY
+            b.category
+    </select>
+    <select id="getBooksByIds" resultType="Book">
+        SELECT * FROM booklist
+        WHERE book_id IN
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getCategoryCollectCount" resultType="int">
+        SELECT COUNT(*)
+        FROM bookcollection ub
+                 JOIN booklist b ON ub.book_id = b.book_id
+        WHERE b.category = #{category}
+    </select>
 </mapper>

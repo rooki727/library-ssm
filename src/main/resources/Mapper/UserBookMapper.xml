@@ -16,4 +16,8 @@
     <select id="getBooksByCategory" resultType="com.ssmtest.entity.Book">
         SELECT * FROM booklist where category=#{category}
     </select>
+    <select id="getAllUserBookInteractions" resultType="map">
+        SELECT user_id, book_id
+        FROM bookCollection
+    </select>
 </mapper>
