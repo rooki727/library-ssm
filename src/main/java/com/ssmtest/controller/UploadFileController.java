@@ -75,4 +75,65 @@ public class UploadFileController {
 
         return response;
     }
+    // 文件存储目录（建议通过@Value注入）
+    private static final String ZIP_UPLOAD_DIR = "/static/zips/";
+
+    @RequestMapping(value = "/uploadZip")
+    @ResponseBody
+    public ApiResponse<String> uploadZipFile(
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
+
+        ApiResponse<String> response = new ApiResponse<>();
+
+        try {
+            // 1. 空文件校验
+            if (file.isEmpty()) {
+                response.setCode("-1");
+                response.setMsg("文件不能为空");
+                return response;
+            }
+
+            // 2. 文件类型校验
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null ||
+                    (!originalFilename.toLowerCase().endsWith(".zip") &&
+                            !originalFilename.toLowerCase().endsWith(".rar"))) {
+                response.setCode("-1");
+                response.setMsg("仅支持ZIP/RAR格式");
+                return response;
+            }
+
+            // 3. 创建存储目录
+            String realPath = request.getSession().getServletContext().getRealPath(ZIP_UPLOAD_DIR);
+            File destDir = new File(realPath);
+            if (!destDir.exists()) {
+                destDir.mkdirs();
+            }
+
+            // 4. 生成唯一文件名
+            String fileName = UUID.randomUUID() + "_" + originalFilename;
+            File destFile = new File(destDir, fileName);
+
+            // 5. 保存文件
+            file.transferTo(destFile);
+
+            // 6. 构造访问URL
+            String baseUrl = request.getScheme() + "://" +
+                    request.getServerName() + ":" +
+                    request.getServerPort() +
+                    request.getContextPath();
+
+            String fileUrl = baseUrl + ZIP_UPLOAD_DIR + fileName;
+
+            response.setCode("1");
+            response.setMsg("上传成功");
+            response.setResult(fileUrl);
+        } catch (IOException e) {
+            response.setCode("-1");
+            response.setMsg("上传失败: " + e.getMessage());
+        }
+
+        return response;
+    }
 }
