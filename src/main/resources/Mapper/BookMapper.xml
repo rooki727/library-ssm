@@ -22,17 +22,49 @@
 
     <!-- 更新book信息 -->
     <update id="updateBook" parameterType="com.ssmtest.entity.Book">
-        UPDATE booklist SET book_name = #{book_name}, author = #{author}, category = #{category},
-                            price = #{price},stock= #{stock},sale_number= #{sale_number},press=#{press},
-                            picture = #{picture},main_picture = #{main_picture},introduce = #{introduce}
+        UPDATE booklist
+        <set>
+            <if test="book_name != null and book_name != ''">book_name = #{book_name},</if>
+            <if test="author != null and author != ''">author = #{author},</if>
+            <if test="category != null and category != ''">category = #{category},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="stock != null">stock = #{stock},</if>
+            <if test="sale_number != null">sale_number = #{sale_number},</if>
+            <if test="press != null and press != ''">press = #{press},</if>
+            <if test="picture != null and picture != ''">picture = #{picture},</if>
+            <if test="main_picture != null and main_picture != ''">main_picture = #{main_picture},</if>
+            <if test="introduce != null and introduce != ''">introduce = #{introduce},</if>
+        </set>
         WHERE book_id = #{book_id}
     </update>
 
     <!-- 添加book -->
     <insert id="addBook" parameterType="com.ssmtest.entity.Book">
-        INSERT INTO booklist (book_name,author,category,price,buildTime,picture,main_picture,introduce,stock,press)
-        VALUES(#{book_name}, #{author}, #{category}, #{price}, #{buildTime},
-               #{picture},#{main_picture},#{introduce},#{stock},#{press})
+        INSERT INTO booklist
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="book_name != null and book_name != ''">book_name,</if>
+            <if test="author != null and author != ''">author,</if>
+            <if test="category != null and category != ''">category,</if>
+            <if test="price != null">price,</if>
+            <if test="buildTime != null">buildTime,</if>
+            <if test="picture != null and picture != ''">picture,</if>
+            <if test="main_picture != null and main_picture != ''">main_picture,</if>
+            <if test="introduce != null and introduce != ''">introduce,</if>
+            <if test="stock != null">stock,</if>
+            <if test="press != null and press != ''">press,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="book_name != null and book_name != ''">#{book_name},</if>
+            <if test="author != null and author != ''">#{author},</if>
+            <if test="category != null and category != ''">#{category},</if>
+            <if test="price != null">#{price},</if>
+            <if test="buildTime != null">#{buildTime},</if>
+            <if test="picture != null and picture != ''">#{picture},</if>
+            <if test="main_picture != null and main_picture != ''">#{main_picture},</if>
+            <if test="introduce != null and introduce != ''">#{introduce},</if>
+            <if test="stock != null">#{stock},</if>
+            <if test="press != null and press != ''">#{press},</if>
+        </trim>
     </insert>
     <!-- 删除book -->
     <delete id="deleteBook" parameterType="com.ssmtest.entity.Book">

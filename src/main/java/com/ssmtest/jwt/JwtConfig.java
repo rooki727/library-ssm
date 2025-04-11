@@ -27,7 +27,7 @@ public class JwtConfig {
         // 过期时间
         long expMillis = nowMillis + TimeUnit.MINUTES.toMillis(2);
 
-//        long expMillis = nowMillis + TimeUnit.DAYS.toMillis(3); // 设置为3天
+//        long expMillis = nowMillis + TimeUnit.DAYS.toMillis(7); // 设置为7天
         Date expiration = new Date(expMillis);
 
         return Jwts.builder()
